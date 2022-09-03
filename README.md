@@ -26,6 +26,9 @@
 ## Flowchart
 
 ## Database ERD
+![ERD](diagram.png)
+
+수정 가능성 
 
 ## Api docs
 
