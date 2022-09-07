@@ -1,4 +1,4 @@
-package com.onsuyum.common.model;
+package com.onsuyum.common.domain;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
