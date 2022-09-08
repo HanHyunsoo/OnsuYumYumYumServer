@@ -27,8 +27,8 @@ public class Hashtag extends BaseTimeEntity {
     private List<RestaurantHashTag> restaurantHashTags = new ArrayList<>();
 
     @Builder
-    public Hashtag(Long id, String name) {
-        this.id = id;
+    public Hashtag(String name, List<RestaurantHashTag> restaurantHashTags) {
         this.name = name;
+        this.restaurantHashTags = restaurantHashTags;
     }
 }

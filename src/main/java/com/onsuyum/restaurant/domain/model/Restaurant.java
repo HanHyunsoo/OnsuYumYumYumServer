@@ -72,7 +72,8 @@ public class Restaurant extends BaseTimeEntity {
     }
 
     @Builder
-    public Restaurant(String name, String phoneNumber, String businessHours, String description, String location, Double longitude, Double latitude, ImageFile imageFile) {
+    public Restaurant(boolean isRequest, String name, String phoneNumber, String businessHours, String description, String location, Double longitude, Double latitude, ImageFile imageFile, List<Menu> menus, List<RestaurantHashTag> restaurantHashTags) {
+        this.isRequest = isRequest;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.businessHours = businessHours;
@@ -81,5 +82,7 @@ public class Restaurant extends BaseTimeEntity {
         this.longitude = longitude;
         this.latitude = latitude;
         this.imageFile = imageFile;
+        this.menus = menus;
+        this.restaurantHashTags = restaurantHashTags;
     }
 }
