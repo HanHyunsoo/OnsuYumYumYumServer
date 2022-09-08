@@ -10,6 +10,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -34,7 +35,8 @@ public class Restaurant extends BaseTimeEntity {
     private String phoneNumber;
 
     @Column(name = "business_hours", length = 500)
-    private String businessHours;
+    @Convert(converter = StringListConverter.class)
+    private List<String> businessHours;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
@@ -58,7 +60,7 @@ public class Restaurant extends BaseTimeEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "restaurant")
     private List<RestaurantHashTag> restaurantHashTags = new ArrayList<>();
 
-    public void update(String name, String phoneNumber, String businessHours, String description, String location, Double longitude, Double latitude, ImageFile imageFile) {
+    public void update(String name, String phoneNumber, List<String> businessHours, String description, String location, Double longitude, Double latitude, ImageFile imageFile) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.businessHours = businessHours;
@@ -72,7 +74,7 @@ public class Restaurant extends BaseTimeEntity {
     }
 
     @Builder
-    public Restaurant(boolean isRequest, String name, String phoneNumber, String businessHours, String description, String location, Double longitude, Double latitude, ImageFile imageFile, List<Menu> menus, List<RestaurantHashTag> restaurantHashTags) {
+    public Restaurant(boolean isRequest, String name, String phoneNumber, List<String> businessHours, String description, String location, Double longitude, Double latitude, ImageFile imageFile, List<Menu> menus, List<RestaurantHashTag> restaurantHashTags) {
         this.isRequest = isRequest;
         this.name = name;
         this.phoneNumber = phoneNumber;
@@ -84,5 +86,19 @@ public class Restaurant extends BaseTimeEntity {
         this.imageFile = imageFile;
         this.menus = menus;
         this.restaurantHashTags = restaurantHashTags;
+    }
+}
+
+@Converter
+class StringListConverter implements AttributeConverter<List<String>, String> {
+    private static final String SPLIT_CHAR = ";!";
+    @Override
+    public String convertToDatabaseColumn(List<String> attribute) {
+        return String.join(SPLIT_CHAR, attribute);
+    }
+
+    @Override
+    public List<String> convertToEntityAttribute(String dbData) {
+        return Arrays.asList(dbData.split(SPLIT_CHAR));
     }
 }
