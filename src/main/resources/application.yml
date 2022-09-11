@@ -58,7 +58,7 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 50MB
-      location: ~/Desktop/storage/
+      location: /Users/hanhyunsoo/Desktop/storage
   config:
     activate:
       on-profile: development
