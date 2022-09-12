@@ -27,8 +27,7 @@ public class S3StorageService implements StorageService {
     private final AmazonS3 amazonS3;
 
     @Override
-    public String upload(MultipartFile file) {
-        String newFileName = createRandomFileName(file.getOriginalFilename());
+    public String upload(MultipartFile file, String newFileName) {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentLength(file.getSize());
         objectMetadata.setContentType(file.getContentType());

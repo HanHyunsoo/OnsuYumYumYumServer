@@ -21,8 +21,8 @@ public class LocalStorageService implements StorageService {
     private String localFilePath;
 
     @Override
-    public String upload(MultipartFile file) {
-        File newFile = new File(createRandomFileName(file.getOriginalFilename()));
+    public String upload(MultipartFile file, String newFileName) {
+        File newFile = new File(newFileName);
 
         try {
             file.transferTo(newFile);
