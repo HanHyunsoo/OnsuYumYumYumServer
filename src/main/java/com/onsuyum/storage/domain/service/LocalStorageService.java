@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 @Service("local")
@@ -29,7 +30,7 @@ public class LocalStorageService implements StorageService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "서버측에서 파일을 저장할 수 없습니다.");
         }
 
-        return newFile.getPath();
+        return URLEncoder.encode(newFile.getPath(), StandardCharsets.UTF_8);
     }
 
     @Override
