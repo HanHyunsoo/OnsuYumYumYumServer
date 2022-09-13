@@ -2,6 +2,7 @@ package com.onsuyum.storage.domain.model;
 
 import com.onsuyum.common.domain.BaseTimeEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,9 +24,13 @@ public class ImageFile extends BaseTimeEntity {
     @Column(name = "converted_name", nullable = false, length = 500)
     private String convertedName;
 
-    @Column(name = "local_url", nullable = false, length = 1000)
-    private String localUrl;
-
     @Column(name = "s3_url", nullable = false, length = 1000)
     private String s3Url;
+
+    @Builder
+    public ImageFile(String originalName, String convertedName, String s3Url) {
+        this.originalName = originalName;
+        this.convertedName = convertedName;
+        this.s3Url = s3Url;
+    }
 }
