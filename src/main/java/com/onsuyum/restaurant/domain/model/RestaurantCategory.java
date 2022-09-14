@@ -9,9 +9,9 @@ import javax.persistence.*;
 
 @Getter
 @Entity
-@Table(name = "restaurant_hash_tag")
+@Table(name = "restaurant_category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RestaurantHashTag {
+public class RestaurantCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -21,13 +21,13 @@ public class RestaurantHashTag {
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
-    @ManyToOne(targetEntity = Hashtag.class)
-    @JoinColumn(name = "hashtag_id", nullable = false)
-    private Hashtag hashtag;
+    @ManyToOne(targetEntity = Category.class)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
     @Builder
-    public RestaurantHashTag(Restaurant restaurant, Hashtag hashtag) {
+    public RestaurantCategory(Restaurant restaurant, Category category) {
         this.restaurant = restaurant;
-        this.hashtag = hashtag;
+        this.category = category;
     }
 }

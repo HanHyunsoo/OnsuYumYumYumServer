@@ -35,24 +35,24 @@ public class Menu extends BaseTimeEntity {
     private String description;
 
     @OneToOne(targetEntity = ImageFile.class)
-    @JoinColumn(name = "image_id")
-    private ImageFile imageFile;
+    @JoinColumn(name = "menu_image")
+    private ImageFile menuImage;
 
-    public void update(String name, Integer price, String description, ImageFile imageFile) {
+    public void update(String name, Integer price, String description, ImageFile menuImage) {
         this.name = name;
         this.price = price;
         this.description = description;
-        if (imageFile != null) {
-            this.imageFile = imageFile;
+        if (menuImage != null) {
+            this.menuImage = menuImage;
         }
     }
 
     @Builder
-    public Menu(Restaurant restaurant, String name, Integer price, String description, ImageFile imageFile) {
+    public Menu(Restaurant restaurant, String name, Integer price, String description, ImageFile menuImage) {
         this.restaurant = restaurant;
         this.name = name;
         this.price = price;
         this.description = description;
-        this.imageFile = imageFile;
+        this.menuImage = menuImage;
     }
 }

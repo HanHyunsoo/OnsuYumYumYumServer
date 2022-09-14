@@ -12,9 +12,9 @@ import java.util.List;
 
 @Getter
 @Entity
-@Table(name = "hashtag")
+@Table(name = "category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Hashtag extends BaseTimeEntity {
+public class Category extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -23,12 +23,12 @@ public class Hashtag extends BaseTimeEntity {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "hashtag")
-    private List<RestaurantHashTag> restaurantHashTags = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "category")
+    private List<RestaurantCategory> restaurantCategories = new ArrayList<>();
 
     @Builder
-    public Hashtag(String name, List<RestaurantHashTag> restaurantHashTags) {
+    public Category(String name, List<RestaurantCategory> restaurantCategories) {
         this.name = name;
-        this.restaurantHashTags = restaurantHashTags;
+        this.restaurantCategories = restaurantCategories;
     }
 }
