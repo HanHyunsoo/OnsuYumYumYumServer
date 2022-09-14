@@ -53,6 +53,12 @@ spring:
         order_inserts: true
         order_updates: true
         format_sql: true
+  # Request file 설정
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 50MB
+      location: /Users/hanhyunsoo/Desktop/storage
   config:
     activate:
       on-profile: development
