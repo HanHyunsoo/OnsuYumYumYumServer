@@ -21,7 +21,7 @@ public class Menu extends BaseTimeEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(targetEntity = Restaurant.class)
+    @ManyToOne(targetEntity = Restaurant.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 

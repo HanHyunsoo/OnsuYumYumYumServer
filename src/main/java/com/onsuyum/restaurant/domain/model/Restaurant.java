@@ -58,10 +58,10 @@ public class Restaurant extends BaseTimeEntity {
     @JoinColumn(name = "inside_img")
     private ImageFile insideImage;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "restaurant")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "restaurant", fetch = FetchType.LAZY)
     private List<Menu> menu = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "restaurant")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "restaurant", fetch = FetchType.LAZY)
     private List<RestaurantCategory> restaurantCategories = new ArrayList<>();
 
     public void update(boolean isRequest, String name, String phone, List<String> time, String summary, String location, Double longitude, Double latitude, ImageFile outsideImage, ImageFile insideImage) {

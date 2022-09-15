@@ -23,7 +23,7 @@ public class Category extends BaseTimeEntity {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "category")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "category", fetch = FetchType.LAZY)
     private List<RestaurantCategory> restaurantCategories = new ArrayList<>();
 
     @Builder
