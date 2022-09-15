@@ -1,6 +1,7 @@
 package com.onsuyum.restaurant.domain.model;
 
 import com.onsuyum.common.domain.BaseTimeEntity;
+import com.onsuyum.restaurant.dto.response.CategoryResponse;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,5 +31,14 @@ public class Category extends BaseTimeEntity {
     public Category(String name, List<RestaurantCategory> restaurantCategories) {
         this.name = name;
         this.restaurantCategories = restaurantCategories;
+    }
+
+    public CategoryResponse toResponseDTO() {
+        return CategoryResponse.builder()
+                .id(id)
+                .name(name)
+                .createdDate(createdDate)
+                .modifiedDate(modifiedDate)
+                .build();
     }
 }

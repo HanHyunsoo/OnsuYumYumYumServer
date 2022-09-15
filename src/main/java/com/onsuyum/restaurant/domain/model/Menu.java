@@ -1,6 +1,7 @@
 package com.onsuyum.restaurant.domain.model;
 
 import com.onsuyum.common.domain.BaseTimeEntity;
+import com.onsuyum.restaurant.dto.response.MenuResponse;
 import com.onsuyum.storage.domain.model.ImageFile;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -54,5 +55,17 @@ public class Menu extends BaseTimeEntity {
         this.price = price;
         this.description = description;
         this.menuImage = menuImage;
+    }
+
+    public MenuResponse toResponseDTO() {
+        return MenuResponse.builder()
+                .id(id)
+                .name(name)
+                .price(price)
+                .description(description)
+                .menuImage(menuImage.toResponseDTO())
+                .createdDate(createdDate)
+                .modifiedDate(modifiedDate)
+                .build();
     }
 }
