@@ -17,11 +17,12 @@ public interface RestaurantRepository extends PagingAndSortingRepository<Restaur
     Optional<Restaurant> findByIdAndRequest(Long id, boolean isRequest);
 
     @Query(
-            value = "select r, count(rc) as categoryCount " +
+            value = "select r " +
                     "from Restaurant r left join RestaurantCategory rc " +
                     "on r.id = rc.restaurant.id " +
                     "where r.isRequest = :isRequest " +
-                    "group by r ",
+                    "group by r " +
+                    "order by count(rc) desc ",
             countQuery = "select count(r) from Restaurant r"
     )
     Page<Restaurant> findAllByRequestWithCategoryCount(Pageable pageable, @Param("isRequest") boolean isRequest);

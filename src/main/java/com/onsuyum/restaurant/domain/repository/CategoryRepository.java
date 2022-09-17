@@ -12,10 +12,11 @@ public interface CategoryRepository extends PagingAndSortingRepository<Category,
     Optional<Category> findByName(String name);
 
     @Query(
-            value = "select c, count(rc) as restaurantCount " +
+            value = "select c " +
                     "from Category c left join RestaurantCategory rc " +
                     "on c.id = rc.category.id " +
-                    "group by c ",
+                    "group by c " +
+                    "order by count(rc) desc ",
             countQuery = "select count(c) from Category c"
     )
     Page<Category> findAllWithRestaurantCount(Pageable pageable);

@@ -9,8 +9,6 @@ import com.onsuyum.restaurant.dto.response.RestaurantResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,11 +24,7 @@ public class CategoryController {
     private final RestaurantCategoryService restaurantCategoryService;
 
     @GetMapping
-    public ResponseEntity<Page<CategoryResponse>> findAll(
-            @SortDefault(
-                    sort = "restaurantCount",
-                    direction = Sort.Direction.DESC
-            ) Pageable pageable) {
+    public ResponseEntity<Page<CategoryResponse>> findAll(Pageable pageable) {
         Page<Category> categories = categoryService.findAll(pageable);
 
         if (categories.isEmpty()) {
