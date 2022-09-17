@@ -22,8 +22,15 @@ public class RestaurantService {
 
     @Transactional
     public Restaurant save(RestaurantRequest dto, boolean isRequest) {
-        ImageFile outsideImage = imageFileService.save(dto.getOutsideImage());
-        ImageFile insideImage = imageFileService.save(dto.getInsideImage());
+        ImageFile outsideImage = null, insideImage = null;
+
+        if (dto.getOutsideImage() != null) {
+            outsideImage = imageFileService.save(dto.getOutsideImage());
+        }
+
+        if (dto.getInsideImage() != null) {
+            insideImage = imageFileService.save(dto.getInsideImage());
+        }
 
         Restaurant restaurant = Restaurant
                 .builder()

@@ -112,8 +112,8 @@ public class Restaurant extends BaseTimeEntity {
                 .location(location)
                 .longitude(longitude)
                 .latitude(latitude)
-                .outsideImage(outsideImage.toResponseDTO())
-                .insideImage(insideImage.toResponseDTO())
+                .outsideImage(outsideImage != null ? outsideImage.toResponseDTO() : null)
+                .insideImage(insideImage != null ? insideImage.toResponseDTO() : null)
                 .createdDate(createdDate)
                 .modifiedDate(modifiedDate)
                 .build();
