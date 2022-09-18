@@ -10,6 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
@@ -26,6 +30,13 @@ public class CategoryService {
                 );
 
         return categoryRepository.save(category);
+    }
+
+    @Transactional
+    public List<Category> findOrCreateCategories(Set<String> categoryNames) {
+        return categoryNames.stream()
+                .map(this::findOrCreateCategory)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

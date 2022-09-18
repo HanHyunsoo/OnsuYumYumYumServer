@@ -1,7 +1,9 @@
 package com.onsuyum.restaurant.controller;
 
+import com.onsuyum.restaurant.domain.model.Category;
 import com.onsuyum.restaurant.domain.model.Menu;
 import com.onsuyum.restaurant.domain.model.Restaurant;
+import com.onsuyum.restaurant.domain.service.CategoryService;
 import com.onsuyum.restaurant.domain.service.MenuService;
 import com.onsuyum.restaurant.domain.service.RestaurantCategoryService;
 import com.onsuyum.restaurant.domain.service.RestaurantService;
@@ -23,7 +25,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/restaurants")
 public class RestaurantController {
 
-    // TODO: 2022.09.18 각 서비스 별 메소드에 서비스끼리 결합도가 높음 이걸 나눠야 될거같음(예: 어떤 음식점에 속한 메뉴들을 검색하려면 음식점 서비스, 메뉴 서비스가 필요한데 메뉴서비스의 findAllByRestaurantId 메소드에서 레스토랑 서비스를 호출하고 있음) - 순환참조 발생 위험있음
+    private final CategoryService categoryService;
     private final MenuService menuService;
     private final RestaurantService restaurantService;
     private final RestaurantCategoryService restaurantCategoryService;
@@ -31,7 +33,8 @@ public class RestaurantController {
     @PostMapping
     public ResponseEntity<RestaurantResponse> saveRestaurantWithRequest(@ModelAttribute RestaurantRequest dto) {
         Restaurant restaurant = restaurantService.save(dto, true);
-        restaurantCategoryService.saveRestaurantCategories(restaurant, dto.getCategoryNames());
+        List<Category> categories = categoryService.findOrCreateCategories(dto.getCategoryNames());
+        restaurantCategoryService.saveRestaurantCategories(restaurant, categories);
 
         return ResponseEntity.ok(restaurant.toResponseDTO());
     }
@@ -65,7 +68,8 @@ public class RestaurantController {
 
     @GetMapping("/{id}/menus")
     public ResponseEntity<List<MenuResponse>> findAllByRestaurantId(@PathVariable Long id) {
-        List<Menu> menus = menuService.findAllByRestaurantId(id);
+        Restaurant restaurant = restaurantService.findById(id);
+        List<Menu> menus = menuService.findAllByRestaurant(restaurant);
 
         return ResponseEntity.ok(menus.stream().map(Menu::toResponseDTO).collect(Collectors.toList()));
     }

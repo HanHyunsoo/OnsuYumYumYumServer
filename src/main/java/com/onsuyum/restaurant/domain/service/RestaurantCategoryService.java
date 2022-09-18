@@ -11,20 +11,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RestaurantCategoryService {
 
-    private final CategoryService categoryService;
-    private final RestaurantService restaurantService;
     private final RestaurantCategoryRepository restaurantCategoryRepository;
 
     @Transactional
-    public List<RestaurantCategory> saveRestaurantCategories(Restaurant restaurant, Set<String> categoryNames) {
-        List<Category> categories = mapToCategoryList(categoryNames);
+    public List<RestaurantCategory> saveRestaurantCategories(Restaurant restaurant, List<Category> categories) {
         List<RestaurantCategory> restaurantCategories = categories.stream()
                 .map(category -> restaurantCategoryRepository
                         .findByRestaurantAndCategory(restaurant, category)
@@ -40,25 +36,16 @@ public class RestaurantCategoryService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Restaurant> findAllRestaurantByCategoryId(Pageable pageable, Long id) {
-        Category category = categoryService.findById(id);
+    public Page<Restaurant> findAllRestaurantByCategory(Pageable pageable, Category category) {
         Page<RestaurantCategory> restaurantCategories = restaurantCategoryRepository.findAllByCategory(pageable, category);
 
         return restaurantCategories.map(RestaurantCategory::getRestaurant);
     }
 
     @Transactional(readOnly = true)
-    public Page<Category> findAllCategoryByRestaurantId(Pageable pageable, Long id) {
-        Restaurant restaurant = restaurantService.findById(id);
+    public Page<Category> findAllCategoryByRestaurant(Pageable pageable, Restaurant restaurant) {
         Page<RestaurantCategory> restaurantCategories = restaurantCategoryRepository.findAllByRestaurant(pageable, restaurant);
 
         return restaurantCategories.map(RestaurantCategory::getCategory);
     }
-
-    private List<Category> mapToCategoryList(Set<String> categoryNames) {
-        return categoryNames.stream()
-                .map(categoryService::findOrCreateCategory)
-                .collect(Collectors.toList());
-    }
-
 }

@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 public class MenuService {
 
     private final MenuRepository menuRepository;
-    private final RestaurantService restaurantService;
     private final ImageFileService imageFileService;
 
     @Transactional
@@ -59,8 +58,7 @@ public class MenuService {
     }
 
     @Transactional(readOnly = true)
-    public List<Menu> findAllByRestaurantId(Long id) {
-        Restaurant restaurant = restaurantService.findById(id);
+    public List<Menu> findAllByRestaurant(Restaurant restaurant) {
         return menuRepository.findAllByRestaurant(restaurant);
     }
 
@@ -118,8 +116,7 @@ public class MenuService {
     }
 
     @Transactional
-    public void deleteAllByRestaurantId(Long id) {
-        Restaurant restaurant = restaurantService.findById(id);
+    public void deleteAllByRestaurant(Restaurant restaurant) {
         menuRepository.deleteAllByRestaurant(restaurant);
     }
 

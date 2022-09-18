@@ -43,7 +43,8 @@ public class CategoryController {
 
     @GetMapping("/{id}/restaurants")
     public ResponseEntity<Page<RestaurantResponse>> findAllRestaurantByCategoryId(@PathVariable Long id, Pageable pageable) {
-        Page<Restaurant> restaurants = restaurantCategoryService.findAllRestaurantByCategoryId(pageable, id);
+        Category category = categoryService.findById(id);
+        Page<Restaurant> restaurants = restaurantCategoryService.findAllRestaurantByCategory(pageable, category);
 
         if (restaurants.isEmpty()) {
             return ResponseEntity.noContent().build();
