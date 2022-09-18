@@ -63,7 +63,7 @@ public class Menu extends BaseTimeEntity {
                 .name(name)
                 .price(price)
                 .description(description)
-                .menuImage(menuImage.toResponseDTO())
+                .menuImage(menuImage != null ? menuImage.toResponseDTO() : null)
                 .createdDate(createdDate)
                 .modifiedDate(modifiedDate)
                 .build();

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,23 @@ public class MenuService {
                 .collect(Collectors.toList());
 
         return (List<Menu>) menuRepository.saveAll(menus);
+    }
+
+    @Transactional
+    public List<Menu> saveAllWithRequest(Restaurant restaurant, List<MenuRequest> dtos) {
+        if (!restaurant.isRequest()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "이 음식점에 대해 권한이 없습니다.");
+        }
+
+        LocalDateTime modifiedDate = restaurant.getModifiedDate();
+        LocalDateTime now = LocalDateTime.now();
+
+        Duration duration = Duration.between(modifiedDate, now);
+        if (duration.getSeconds() > 300) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "음식점에 대해 접근할 수 있는 시간(5분)이 지났습니다.");
+        }
+
+        return saveAll(restaurant, dtos);
     }
 
     @Transactional(readOnly = true)
@@ -105,7 +124,10 @@ public class MenuService {
     }
 
     private Menu dtoToMenu(Restaurant restaurant, MenuRequest dto) {
-        ImageFile menuImage = imageFileService.save(dto.getMenuImage());
+        ImageFile menuImage = null;
+        if (dto.getMenuImage() != null) {
+            menuImage = imageFileService.save(dto.getMenuImage());
+        }
 
         return Menu.builder()
                 .restaurant(restaurant)
