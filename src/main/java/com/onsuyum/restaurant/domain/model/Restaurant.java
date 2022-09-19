@@ -39,7 +39,7 @@ public class Restaurant extends BaseTimeEntity {
     @Convert(converter = StringListConverter.class)
     private List<String> time;
 
-    @Column(name = "summary", columnDefinition = "TEXT")
+    @Column(name = "summary", length = 1000)
     private String summary;
 
     @Column(name = "location", length = 500)
