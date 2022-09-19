@@ -3,6 +3,7 @@ package com.onsuyum.restaurant.domain.service;
 import com.onsuyum.restaurant.domain.model.Restaurant;
 import com.onsuyum.restaurant.domain.repository.RestaurantRepository;
 import com.onsuyum.restaurant.dto.request.RestaurantRequest;
+import com.onsuyum.restaurant.dto.response.RestaurantResponse;
 import com.onsuyum.storage.domain.model.ImageFile;
 import com.onsuyum.storage.domain.service.ImageFileService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class RestaurantService {
@@ -21,7 +25,7 @@ public class RestaurantService {
     private final ImageFileService imageFileService;
 
     @Transactional
-    public Restaurant save(RestaurantRequest dto, boolean isRequest) {
+    public RestaurantResponse save(RestaurantRequest dto, boolean isRequest) {
         ImageFile outsideImage = null, insideImage = null;
 
         if (dto.getOutsideImage() != null) {
@@ -46,41 +50,53 @@ public class RestaurantService {
                 .insideImage(insideImage)
                 .build();
 
-        return restaurantRepository.save(restaurant);
+        restaurant = restaurantRepository.save(restaurant);
+
+        return restaurant.toResponseDTO();
     }
 
     @Transactional(readOnly = true)
-    public Restaurant findByIdAndIsRequest(Long id, boolean isRequest) {
+    public RestaurantResponse findById(Long id) {
+        Restaurant restaurant = findEntityById(id);
 
-        return restaurantRepository.findByIdAndRequest(id, isRequest)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "음식점 정보 DB에 존재하지 않음"));
+        return restaurant.toResponseDTO();
     }
 
     @Transactional(readOnly = true)
-    public Restaurant findById(Long id) {
-        return restaurantRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "음식점 정보 DB에 존재하지 않음"));
+    public RestaurantResponse findByIdWithRequest(Long id, boolean checkRequest) {
+        Restaurant restaurant = findEntityById(id);
+
+        if (checkRequest) {
+            validIsRequest(restaurant);
+        }
+
+        return restaurant.toResponseDTO();
     }
 
     @Transactional(readOnly = true)
-    public Restaurant findRandomRestaurant() {
+    public RestaurantResponse findRandomRestaurant() {
         return restaurantRepository.findRandomOne()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "음식점 정보 DB에 존재하지 않음"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "음식점 정보 DB에 존재하지 않음"))
+                .toResponseDTO();
     }
 
     @Transactional(readOnly = true)
-    public Page<Restaurant> findAllByRequest(Pageable pageable, boolean isRequest) {
-        return restaurantRepository.findAllByRequestWithCategoryCount(pageable, isRequest);
+    public Page<RestaurantResponse> findAllByRequest(Pageable pageable, boolean isRequest) {
+        Page<Restaurant> restaurantPage = restaurantRepository.findAllByRequestWithCategoryCount(pageable, isRequest);
+
+        return restaurantPage.map(Restaurant::toResponseDTO);
     }
 
     @Transactional(readOnly = true)
-    public Page<Restaurant> findAllByNameAndRequest(Pageable pageable, String name, boolean isRequest) {
-        return restaurantRepository.findAllByNameLikeAndRequest(pageable, name, isRequest);
+    public Page<RestaurantResponse> findAllByNameAndRequest(Pageable pageable, String name, boolean isRequest) {
+        Page<Restaurant> restaurantPage = restaurantRepository.findAllByNameLikeAndRequest(pageable, name, isRequest);
+
+        return restaurantPage.map(Restaurant::toResponseDTO);
     }
 
     @Transactional
-    public Restaurant update(Long id, RestaurantRequest dto) {
-        Restaurant restaurant = findById(id);
+    public RestaurantResponse update(Long id, RestaurantRequest dto) {
+        Restaurant restaurant = findEntityById(id);
         ImageFile outsideImage = restaurant.getOutsideImage();
         ImageFile insideImage = restaurant.getInsideImage();
 
@@ -107,20 +123,46 @@ public class RestaurantService {
                 insideImage
         );
 
-        return restaurantRepository.save(restaurant);
+        restaurant = restaurantRepository.save(restaurant);
+
+        return restaurant.toResponseDTO();
     }
 
     @Transactional
-    public Restaurant changeIsRequest(Long id) {
-        Restaurant restaurant = findById(id);
+    public RestaurantResponse changeIsRequest(Long id) {
+        Restaurant restaurant = findEntityById(id);
         restaurant.changeIsRequest();
 
-        return restaurantRepository.save(restaurant);
+        restaurant = restaurantRepository.save(restaurant);
+
+        return restaurant.toResponseDTO();
     }
 
     @Transactional
     public void deleteById(Long id) {
-        Restaurant restaurant = findById(id);
+        Restaurant restaurant = findEntityById(id);
         restaurantRepository.delete(restaurant);
+    }
+
+    // Service Layer 내에서 사용 가능한 메서드
+    Restaurant findEntityById(Long id) {
+        return restaurantRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("음식점(pk = %d) 정보 DB에 존재하지 않음", id)));
+    }
+
+    void validTime(Restaurant restaurant) {
+        LocalDateTime modifiedDate = restaurant.getModifiedDate();
+        LocalDateTime now = LocalDateTime.now();
+
+        Duration duration = Duration.between(modifiedDate, now);
+        if (duration.getSeconds() > 300) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "음식점에 대해 접근할 수 있는 시간(5분)이 지났습니다.");
+        }
+    }
+
+    void validIsRequest(Restaurant restaurant) {
+        if (restaurant.isRequest()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "이 음식점에 대해 권한이 없습니다.");
+        }
     }
 }

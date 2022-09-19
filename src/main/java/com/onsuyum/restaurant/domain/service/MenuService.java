@@ -4,6 +4,7 @@ import com.onsuyum.restaurant.domain.model.Menu;
 import com.onsuyum.restaurant.domain.model.Restaurant;
 import com.onsuyum.restaurant.domain.repository.MenuRepository;
 import com.onsuyum.restaurant.dto.request.MenuRequest;
+import com.onsuyum.restaurant.dto.response.MenuResponse;
 import com.onsuyum.storage.domain.model.ImageFile;
 import com.onsuyum.storage.domain.service.ImageFileService;
 import lombok.RequiredArgsConstructor;
@@ -12,70 +13,79 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MenuService {
-
     private final MenuRepository menuRepository;
+    private final RestaurantService restaurantService;
     private final ImageFileService imageFileService;
 
     @Transactional
-    public Menu save(Restaurant restaurant, MenuRequest dto) {
-        Menu menu = dtoToMenu(restaurant, dto);
+    public MenuResponse save(Long id, MenuRequest dto) {
+        Restaurant restaurant = restaurantService.findEntityById(id);
 
-        return menuRepository.save(menu);
+        Menu menu = dtoToMenu(restaurant, dto);
+        menu = menuRepository.save(menu);
+
+        return menu.toResponseDTO();
     }
 
     @Transactional
-    public List<Menu> saveAll(Restaurant restaurant, List<MenuRequest> dtos) {
+    public List<MenuResponse> saveAll(Long id, List<MenuRequest> dtos) {
+        return saveAllWithRequest(id, dtos, false);
+    }
+
+    @Transactional
+    public List<MenuResponse> saveAllWithRequest(Long id, List<MenuRequest> dtos, boolean checkRequest) {
+        Restaurant restaurant = restaurantService.findEntityById(id);
+
+        if (checkRequest) {
+            restaurantService.validTime(restaurant);
+            restaurantService.validIsRequest(restaurant);
+        }
+
         List<Menu> menus = dtos.stream()
                 .map(dto -> dtoToMenu(restaurant, dto))
                 .collect(Collectors.toList());
 
-        return (List<Menu>) menuRepository.saveAll(menus);
-    }
+        menus = (List<Menu>) menuRepository.saveAll(menus);
 
-    @Transactional
-    public List<Menu> saveAllWithRequest(Restaurant restaurant, List<MenuRequest> dtos) {
-        if (!restaurant.isRequest()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "이 음식점에 대해 권한이 없습니다.");
-        }
-
-        LocalDateTime modifiedDate = restaurant.getModifiedDate();
-        LocalDateTime now = LocalDateTime.now();
-
-        Duration duration = Duration.between(modifiedDate, now);
-        if (duration.getSeconds() > 300) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "음식점에 대해 접근할 수 있는 시간(5분)이 지났습니다.");
-        }
-
-        return saveAll(restaurant, dtos);
+        return menus.stream()
+                .map(Menu::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<Menu> findAllByRestaurant(Restaurant restaurant) {
-        return menuRepository.findAllByRestaurant(restaurant);
+    public List<MenuResponse> findAllByRestaurantId(Long id) {
+        return findAllByRestaurantIdWithRequest(id, false);
     }
 
     @Transactional(readOnly = true)
-    public Menu findById(Long id) {
-        return menuRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                String.format("메뉴(pk = %d) 정보가 DB에 존재하지 않습니다.", id)
-                        )
-                );
+    public List<MenuResponse> findAllByRestaurantIdWithRequest(Long id, boolean checkRequest) {
+        Restaurant restaurant = restaurantService.findEntityById(id);
+
+        if (checkRequest) {
+            restaurantService.validIsRequest(restaurant);
+        }
+
+        List<Menu> menus = menuRepository.findAllByRestaurant(restaurant);
+
+        return menus.stream()
+                .map(Menu::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public MenuResponse findById(Long id) {
+        return findEntityById(id).toResponseDTO();
     }
 
     @Transactional
-    public Menu update(Long id, MenuRequest dto) {
-        Menu menu = findById(id);
+    public MenuResponse update(Long id, MenuRequest dto) {
+        Menu menu = findEntityById(id);
         ImageFile menuImage = menu.getMenuImage();
         if (dto.getMenuImage() != null) {
             imageFileService.delete(menuImage.getId());
@@ -89,11 +99,13 @@ public class MenuService {
                 menuImage
         );
 
-        return menuRepository.save(menu);
+        menu = menuRepository.save(menu);
+
+        return menu.toResponseDTO();
     }
 
     @Transactional
-    public List<Menu> updateAll(List<MenuRequest> dtos) {
+    public List<MenuResponse> updateAll(List<MenuRequest> dtos) {
         return dtos.stream()
                 .map(dto -> update(dto.getId(), dto))
                 .collect(Collectors.toList());
@@ -101,7 +113,7 @@ public class MenuService {
 
     @Transactional
     public void deleteById(Long id) {
-        Menu menu = findById(id);
+        Menu menu = findEntityById(id);
 
         menuRepository.delete(menu);
     }
@@ -109,14 +121,15 @@ public class MenuService {
     @Transactional
     public void deleteAllByIds(List<Long> ids) {
         List<Menu> menus = ids.stream()
-                .map(this::findById)
+                .map(this::findEntityById)
                 .collect(Collectors.toList());
 
         menuRepository.deleteAll(menus);
     }
 
     @Transactional
-    public void deleteAllByRestaurant(Restaurant restaurant) {
+    public void deleteAllByRestaurantId(Long id) {
+        Restaurant restaurant = restaurantService.findEntityById(id);
         menuRepository.deleteAllByRestaurant(restaurant);
     }
 
@@ -133,5 +146,17 @@ public class MenuService {
                 .description(dto.getDescription())
                 .menuImage(menuImage)
                 .build();
+    }
+
+    // Service Layer 내에서 사용 가능한 메서드
+
+    Menu findEntityById(Long id) {
+        return menuRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                String.format("메뉴(pk = %d) 정보가 DB에 존재하지 않습니다.", id)
+                        )
+                );
     }
 }

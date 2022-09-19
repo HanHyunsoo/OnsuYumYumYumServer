@@ -27,7 +27,8 @@ public class ImageFileService {
     @Transactional
     public ImageFile save(MultipartFile file) {
         String newFileName = createRandomFileName(file.getOriginalFilename());
-        String s3Url = s3StorageService.upload(file, newFileName);
+//        String s3Url = s3StorageService.upload(file, newFileName);
+        String s3Url = "";
         localStorageService.upload(file, newFileName);
 
         ImageFile imageFile = ImageFile.builder()

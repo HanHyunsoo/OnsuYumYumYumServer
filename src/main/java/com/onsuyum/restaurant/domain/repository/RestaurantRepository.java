@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface RestaurantRepository extends PagingAndSortingRepository<Restaurant, Long> {
+    // TODO JPQL을 쓰는 메서드가 많다.. 나중에 QueryDsl을 이용해서 리팩토링 해야할듯.
 
     @Query(
             value = "select r from Restaurant r where r.id = ?1 and r.isRequest = ?2"

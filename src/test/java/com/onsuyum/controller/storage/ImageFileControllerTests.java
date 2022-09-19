@@ -1,4 +1,4 @@
-package com.onsuyum.controller;
+package com.onsuyum.controller.storage;
 
 import com.onsuyum.storage.controller.ImageFileController;
 import com.onsuyum.storage.domain.service.ImageFileService;

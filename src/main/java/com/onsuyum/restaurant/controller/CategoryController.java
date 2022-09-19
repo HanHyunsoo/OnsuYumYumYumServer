@@ -1,11 +1,7 @@
 package com.onsuyum.restaurant.controller;
 
-import com.onsuyum.restaurant.domain.model.Category;
-import com.onsuyum.restaurant.domain.model.Restaurant;
 import com.onsuyum.restaurant.domain.service.CategoryService;
-import com.onsuyum.restaurant.domain.service.RestaurantCategoryService;
 import com.onsuyum.restaurant.dto.response.CategoryResponse;
-import com.onsuyum.restaurant.dto.response.RestaurantResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,35 +17,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class CategoryController {
 
     private final CategoryService categoryService;
-    private final RestaurantCategoryService restaurantCategoryService;
 
     @GetMapping
     public ResponseEntity<Page<CategoryResponse>> findAll(Pageable pageable) {
-        Page<Category> categories = categoryService.findAll(pageable);
+        Page<CategoryResponse> categoryResponsePage = categoryService.findAll(pageable);
 
-        if (categories.isEmpty()) {
+        if (categoryResponsePage.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(categories.map(Category::toResponseDTO));
+        return ResponseEntity.ok(categoryResponsePage);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponse> findById(@PathVariable Long id) {
-        Category category = categoryService.findById(id);
+        CategoryResponse categoryResponse = categoryService.findById(id);
 
-        return ResponseEntity.ok(category.toResponseDTO());
-    }
-
-    @GetMapping("/{id}/restaurants")
-    public ResponseEntity<Page<RestaurantResponse>> findAllRestaurantByCategoryId(@PathVariable Long id, Pageable pageable) {
-        Category category = categoryService.findById(id);
-        Page<Restaurant> restaurants = restaurantCategoryService.findAllRestaurantByCategory(pageable, category);
-
-        if (restaurants.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.ok(restaurants.map(Restaurant::toResponseDTO));
+        return ResponseEntity.ok(categoryResponse);
     }
 }

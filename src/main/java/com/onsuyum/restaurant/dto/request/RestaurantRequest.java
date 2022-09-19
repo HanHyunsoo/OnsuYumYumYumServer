@@ -6,7 +6,6 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -21,10 +20,9 @@ public class RestaurantRequest {
     private Double latitude;
     private MultipartFile outsideImage;
     private MultipartFile insideImage;
-    private Set<String> categoryNames;
 
     @Builder
-    public RestaurantRequest(Long id, String name, String phone, List<String> time, String summary, String location, Double longitude, Double latitude, MultipartFile outsideImage, MultipartFile insideImage, Set<String> categoryNames) {
+    public RestaurantRequest(Long id, String name, String phone, List<String> time, String summary, String location, Double longitude, Double latitude, MultipartFile outsideImage, MultipartFile insideImage) {
         this.id = id;
         this.name = name;
         this.phone = phone;
@@ -35,6 +33,5 @@ public class RestaurantRequest {
         this.latitude = latitude;
         this.outsideImage = outsideImage;
         this.insideImage = insideImage;
-        this.categoryNames = categoryNames;
     }
 }
