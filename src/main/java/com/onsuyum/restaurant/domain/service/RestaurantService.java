@@ -63,8 +63,19 @@ public class RestaurantService {
     }
 
     @Transactional(readOnly = true)
+    public Restaurant findRandomRestaurant() {
+        return restaurantRepository.findRandomOne()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "음식점 정보 DB에 존재하지 않음"));
+    }
+
+    @Transactional(readOnly = true)
     public Page<Restaurant> findAllByRequest(Pageable pageable, boolean isRequest) {
         return restaurantRepository.findAllByRequestWithCategoryCount(pageable, isRequest);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Restaurant> findAllByNameAndRequest(Pageable pageable, String name, boolean isRequest) {
+        return restaurantRepository.findAllByNameLikeAndRequest(pageable, name, isRequest);
     }
 
     @Transactional

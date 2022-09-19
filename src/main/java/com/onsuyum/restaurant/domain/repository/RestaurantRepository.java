@@ -26,4 +26,23 @@ public interface RestaurantRepository extends PagingAndSortingRepository<Restaur
             countQuery = "select count(r) from Restaurant r"
     )
     Page<Restaurant> findAllByRequestWithCategoryCount(Pageable pageable, @Param("isRequest") boolean isRequest);
+
+    // TODO random으로 뽑기 쿼리 추가
+    @Query(
+            value = "select * " +
+                    "from restaurant r " +
+                    "where r.is_request = 0" +
+                    "order by rand() " +
+                    "limit 1",
+            nativeQuery = true
+    )
+    Optional<Restaurant> findRandomOne();
+
+    @Query(
+            value = "select r " +
+                    "from Restaurant r " +
+                    "where r.name like %?1% and r.isRequest = ?2",
+            countQuery = "select count(r) from Restaurant r"
+    )
+    Page<Restaurant> findAllByNameLikeAndRequest(Pageable pageable, String name, boolean isRequest);
 }

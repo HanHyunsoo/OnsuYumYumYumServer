@@ -40,8 +40,15 @@ public class RestaurantController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<RestaurantResponse>> findAllRestaurantWithNotRequest(Pageable pageable) {
-        Page<Restaurant> restaurants = restaurantService.findAllByRequest(pageable, false);
+    public ResponseEntity<Page<RestaurantResponse>> findAllRestaurantWithNotRequest(Pageable pageable,
+                                                                                    @RequestParam(name = "keyword", required = false) String name) {
+        Page<Restaurant> restaurants;
+        if (name.isBlank()) {
+            restaurants = restaurantService.findAllByRequest(pageable, false);
+        } else {
+            restaurants = restaurantService.findAllByNameAndRequest(pageable, name, false);
+        }
+
 
         if (restaurants.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -53,6 +60,13 @@ public class RestaurantController {
     @GetMapping("/{id}")
     public ResponseEntity<RestaurantResponse> findRestaurantWithNotRequest(@PathVariable Long id) {
         Restaurant restaurant = restaurantService.findByIdAndIsRequest(id, false);
+
+        return ResponseEntity.ok(restaurant.toResponseDTO());
+    }
+
+    @GetMapping("/random")
+    public ResponseEntity<RestaurantResponse> findRandomRestaurantWithNotRequest() {
+        Restaurant restaurant = restaurantService.findRandomRestaurant();
 
         return ResponseEntity.ok(restaurant.toResponseDTO());
     }
@@ -70,7 +84,11 @@ public class RestaurantController {
     public ResponseEntity<List<MenuResponse>> findAllByRestaurantId(@PathVariable Long id) {
         Restaurant restaurant = restaurantService.findById(id);
         List<Menu> menus = menuService.findAllByRestaurant(restaurant);
+        // TODO no content 처리
 
         return ResponseEntity.ok(menus.stream().map(Menu::toResponseDTO).collect(Collectors.toList()));
     }
+
+    // TODO category 불러오기 기능 추가
+//    @GetMapping("/{id}/categories")
 }
