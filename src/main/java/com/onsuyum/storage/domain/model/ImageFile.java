@@ -41,6 +41,8 @@ public class ImageFile extends BaseTimeEntity {
                 .originalName(originalName)
                 .convertedName(convertedName)
                 .s3Url(s3Url)
+                .createdDate(createdDate)
+                .modifiedDate(modifiedDate)
                 .build();
     }
 }
