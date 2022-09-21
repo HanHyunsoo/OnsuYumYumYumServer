@@ -27,6 +27,10 @@ public class MenuController {
     public ResponseEntity<List<MenuResponse>> findAllByRestaurantId(@PathVariable Long id) {
         List<MenuResponse> menuResponses = menuService.findAllByRestaurantIdWithRequest(id, true);
 
+        if (menuResponses.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
         return ResponseEntity.ok(menuResponses);
     }
 
