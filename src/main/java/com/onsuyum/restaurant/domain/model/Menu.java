@@ -1,6 +1,7 @@
 package com.onsuyum.restaurant.domain.model;
 
 import com.onsuyum.common.domain.BaseTimeEntity;
+import com.onsuyum.restaurant.dto.response.MenuResponse;
 import com.onsuyum.storage.domain.model.ImageFile;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,7 +22,7 @@ public class Menu extends BaseTimeEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(targetEntity = Restaurant.class)
+    @ManyToOne(targetEntity = Restaurant.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
@@ -35,24 +36,36 @@ public class Menu extends BaseTimeEntity {
     private String description;
 
     @OneToOne(targetEntity = ImageFile.class)
-    @JoinColumn(name = "image_id")
-    private ImageFile imageFile;
+    @JoinColumn(name = "menu_image")
+    private ImageFile menuImage;
 
-    public void update(String name, Integer price, String description, ImageFile imageFile) {
+    public void update(String name, Integer price, String description, ImageFile menuImage) {
         this.name = name;
         this.price = price;
         this.description = description;
-        if (imageFile != null) {
-            this.imageFile = imageFile;
+        if (menuImage != null) {
+            this.menuImage = menuImage;
         }
     }
 
     @Builder
-    public Menu(Restaurant restaurant, String name, Integer price, String description, ImageFile imageFile) {
+    public Menu(Restaurant restaurant, String name, Integer price, String description, ImageFile menuImage) {
         this.restaurant = restaurant;
         this.name = name;
         this.price = price;
         this.description = description;
-        this.imageFile = imageFile;
+        this.menuImage = menuImage;
+    }
+
+    public MenuResponse toResponseDTO() {
+        return MenuResponse.builder()
+                .id(id)
+                .name(name)
+                .price(price)
+                .description(description)
+                .menuImage(menuImage != null ? menuImage.toResponseDTO() : null)
+                .createdDate(createdDate)
+                .modifiedDate(modifiedDate)
+                .build();
     }
 }

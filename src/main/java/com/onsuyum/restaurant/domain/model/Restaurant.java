@@ -1,6 +1,7 @@
 package com.onsuyum.restaurant.domain.model;
 
 import com.onsuyum.common.domain.BaseTimeEntity;
+import com.onsuyum.restaurant.dto.response.RestaurantResponse;
 import com.onsuyum.storage.domain.model.ImageFile;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -31,15 +32,15 @@ public class Restaurant extends BaseTimeEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
+    @Column(name = "phone")
+    private String phone;
 
-    @Column(name = "business_hours", length = 500)
+    @Column(name = "time", length = 500)
     @Convert(converter = StringListConverter.class)
-    private List<String> businessHours;
+    private List<String> time;
 
-    @Column(name = "description", columnDefinition = "TEXT")
-    private String description;
+    @Column(name = "summary", length = 1000)
+    private String summary;
 
     @Column(name = "location", length = 500)
     private String location;
@@ -51,41 +52,71 @@ public class Restaurant extends BaseTimeEntity {
     private Double latitude;
 
     @OneToOne(targetEntity = ImageFile.class)
-    @JoinColumn(name = "image_id")
-    private ImageFile imageFile;
+    @JoinColumn(name = "outside_img")
+    private ImageFile outsideImage;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "restaurant")
-    private List<Menu> menus = new ArrayList<>();
+    @OneToOne(targetEntity = ImageFile.class)
+    @JoinColumn(name = "inside_img")
+    private ImageFile insideImage;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "restaurant")
-    private List<RestaurantHashTag> restaurantHashTags = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "restaurant", fetch = FetchType.LAZY)
+    private List<Menu> menu = new ArrayList<>();
 
-    public void update(String name, String phoneNumber, List<String> businessHours, String description, String location, Double longitude, Double latitude, ImageFile imageFile) {
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "restaurant", fetch = FetchType.LAZY)
+    private List<RestaurantCategory> restaurantCategories = new ArrayList<>();
+
+    public void update(boolean isRequest, String name, String phone, List<String> time, String summary, String location, Double longitude, Double latitude, ImageFile outsideImage, ImageFile insideImage) {
+        this.isRequest = isRequest;
         this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.businessHours = businessHours;
-        this.description = description;
+        this.phone = phone;
+        this.time = time;
+        this.summary = summary;
         this.location = location;
         this.longitude = longitude;
         this.latitude = latitude;
-        if (imageFile != null) {
-            this.imageFile = imageFile;
+        if (outsideImage != null) {
+            this.outsideImage = outsideImage;
+        }
+        if (insideImage != null) {
+            this.insideImage = insideImage;
         }
     }
 
+    public void changeIsRequest() {
+        this.isRequest = !isRequest;
+    }
+
     @Builder
-    public Restaurant(boolean isRequest, String name, String phoneNumber, List<String> businessHours, String description, String location, Double longitude, Double latitude, ImageFile imageFile, List<Menu> menus, List<RestaurantHashTag> restaurantHashTags) {
+    public Restaurant(boolean isRequest, String name, String phone, List<String> time, String summary, String location, Double longitude, Double latitude, ImageFile outsideImage, ImageFile insideImage, List<Menu> menu, List<RestaurantCategory> restaurantCategories) {
         this.isRequest = isRequest;
         this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.businessHours = businessHours;
-        this.description = description;
+        this.phone = phone;
+        this.time = time;
+        this.summary = summary;
         this.location = location;
         this.longitude = longitude;
         this.latitude = latitude;
-        this.imageFile = imageFile;
-        this.menus = menus;
-        this.restaurantHashTags = restaurantHashTags;
+        this.outsideImage = outsideImage;
+        this.insideImage = insideImage;
+        this.menu = menu;
+        this.restaurantCategories = restaurantCategories;
+    }
+
+    public RestaurantResponse toResponseDTO() {
+        return RestaurantResponse.builder()
+                .id(id)
+                .name(name)
+                .phone(phone)
+                .time(time)
+                .summary(summary)
+                .location(location)
+                .longitude(longitude)
+                .latitude(latitude)
+                .outsideImage(outsideImage != null ? outsideImage.toResponseDTO() : null)
+                .insideImage(insideImage != null ? insideImage.toResponseDTO() : null)
+                .createdDate(createdDate)
+                .modifiedDate(modifiedDate)
+                .build();
     }
 }
 

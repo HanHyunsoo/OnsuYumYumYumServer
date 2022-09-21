@@ -41,7 +41,7 @@ spring:
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
@@ -58,7 +58,7 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 50MB
-      location: /Users/hanhyunsoo/Desktop/storage
+      location: /Users/hanhyunsoo/Desktop/onsuyum_storage/upload
   config:
     activate:
       on-profile: development
@@ -77,6 +77,10 @@ logging:
         type:
           descriptor:
             sql: trace
+
+dummy-data-json-path: "/Users/hanhyunsoo/Desktop/onsuyum_storage/dummy data.json"
+dummy-data-images-path: "/Users/hanhyunsoo/Desktop/onsuyum_storage/download/"
+alt-image-path: "/Users/hanhyunsoo/dev/spring/onsuyum/src/test/java/com/onsuyum/alt.png"
 
 ---
 # 배포 환경
