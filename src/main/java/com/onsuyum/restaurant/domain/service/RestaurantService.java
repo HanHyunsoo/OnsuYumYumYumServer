@@ -161,7 +161,7 @@ public class RestaurantService {
     }
 
     void validIsRequest(Restaurant restaurant) {
-        if (restaurant.isRequest()) {
+        if (!restaurant.isRequest()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "이 음식점에 대해 권한이 없습니다.");
         }
     }
