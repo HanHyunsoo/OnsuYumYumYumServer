@@ -5,12 +5,11 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.onsuyum.common.exception.CouldNotSaveFileInS3;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +35,7 @@ public class S3StorageService implements StorageService {
             amazonS3.putObject(new PutObjectRequest(bucket, newFileName, inputStream, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "S3에 파일 업로드 실패");
+            throw new CouldNotSaveFileInS3();
         }
 
         return amazonS3.getUrl(bucket, newFileName).toString();

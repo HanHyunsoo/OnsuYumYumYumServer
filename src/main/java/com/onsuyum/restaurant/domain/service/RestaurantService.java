@@ -1,5 +1,8 @@
 package com.onsuyum.restaurant.domain.service;
 
+import com.onsuyum.common.exception.ForbiddenRestaurantException;
+import com.onsuyum.common.exception.RestaurantNotFoundException;
+import com.onsuyum.common.exception.RestaurantTimeNotValidException;
 import com.onsuyum.restaurant.domain.model.Restaurant;
 import com.onsuyum.restaurant.domain.repository.RestaurantRepository;
 import com.onsuyum.restaurant.dto.request.RestaurantRequest;
@@ -9,10 +12,8 @@ import com.onsuyum.storage.domain.service.ImageFileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -76,7 +77,7 @@ public class RestaurantService {
     @Transactional(readOnly = true)
     public RestaurantResponse findRandomRestaurant() {
         return restaurantRepository.findRandomOne()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "음식점 정보 DB에 존재하지 않음"))
+                .orElseThrow(RestaurantNotFoundException::new)
                 .toResponseDTO();
     }
 
@@ -146,8 +147,7 @@ public class RestaurantService {
 
     // Service Layer 내에서 사용 가능한 메서드
     Restaurant findEntityById(Long id) {
-        return restaurantRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("음식점(pk = %d) 정보 DB에 존재하지 않음", id)));
+        return restaurantRepository.findById(id).orElseThrow(RestaurantNotFoundException::new);
     }
 
     void validTime(Restaurant restaurant) {
@@ -156,13 +156,13 @@ public class RestaurantService {
 
         Duration duration = Duration.between(modifiedDate, now);
         if (duration.getSeconds() > 300) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "음식점에 대해 접근할 수 있는 시간(5분)이 지났습니다.");
+            throw new RestaurantTimeNotValidException();
         }
     }
 
     void validIsRequest(Restaurant restaurant) {
         if (!restaurant.isRequest()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "이 음식점에 대해 권한이 없습니다.");
+            throw new ForbiddenRestaurantException();
         }
     }
 }
