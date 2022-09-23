@@ -1,5 +1,7 @@
 package com.onsuyum.restaurant.controller;
 
+import com.onsuyum.common.StatusEnum;
+import com.onsuyum.common.response.SuccessResponseBody;
 import com.onsuyum.restaurant.domain.service.CategoryService;
 import com.onsuyum.restaurant.dto.response.CategoryResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,20 +21,32 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<Page<CategoryResponse>> findAll(Pageable pageable) {
+    public ResponseEntity<SuccessResponseBody> findAll(Pageable pageable) {
         Page<CategoryResponse> categoryResponsePage = categoryService.findAll(pageable);
 
         if (categoryResponsePage.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            return SuccessResponseBody
+                    .toResponseEntity(
+                            StatusEnum.NO_CONTENT_CATEGORIES,
+                            null
+                    );
         }
 
-        return ResponseEntity.ok(categoryResponsePage);
+        return SuccessResponseBody
+                .toResponseEntity(
+                        StatusEnum.SUCCESS_GET_CATEGORIES,
+                        categoryResponsePage
+                );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryResponse> findById(@PathVariable Long id) {
+    public ResponseEntity<SuccessResponseBody> findById(@PathVariable Long id) {
         CategoryResponse categoryResponse = categoryService.findById(id);
 
-        return ResponseEntity.ok(categoryResponse);
+        return SuccessResponseBody
+                .toResponseEntity(
+                        StatusEnum.SUCCESS_GET_CATEGORY,
+                        categoryResponse
+                );
     }
 }

@@ -1,5 +1,7 @@
 package com.onsuyum.restaurant.controller;
 
+import com.onsuyum.common.StatusEnum;
+import com.onsuyum.common.response.SuccessResponseBody;
 import com.onsuyum.restaurant.domain.service.MenuService;
 import com.onsuyum.restaurant.dto.request.MenuRequestForm;
 import com.onsuyum.restaurant.dto.response.MenuResponse;
@@ -17,21 +19,29 @@ public class MenuController {
     private final MenuService menuService;
 
     @PostMapping("/{id}/menus")
-    public ResponseEntity<List<MenuResponse>> saveAll(@PathVariable Long id, @ModelAttribute MenuRequestForm menuRequestForm) {
+    public ResponseEntity<SuccessResponseBody> saveAll(@PathVariable Long id, @ModelAttribute MenuRequestForm menuRequestForm) {
         List<MenuResponse> menuResponses = menuService.saveAllWithRequest(id, menuRequestForm.getMenuRequestList(), true);
 
-        return ResponseEntity.ok(menuResponses);
+        return SuccessResponseBody
+                .toResponseEntity(
+                        StatusEnum.SUCCESS_CREATE_MENUS,
+                        menuResponses
+                );
     }
 
     @GetMapping("/{id}/menus")
-    public ResponseEntity<List<MenuResponse>> findAllByRestaurantId(@PathVariable Long id) {
+    public ResponseEntity<SuccessResponseBody> findAllByRestaurantId(@PathVariable Long id) {
         List<MenuResponse> menuResponses = menuService.findAllByRestaurantIdWithRequest(id, true);
 
         if (menuResponses.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            return SuccessResponseBody.toResponseEntity(StatusEnum.NO_CONTENT_MENUS, null);
         }
 
-        return ResponseEntity.ok(menuResponses);
+        return SuccessResponseBody
+                .toResponseEntity(
+                        StatusEnum.SUCCESS_GET_MENUS,
+                        menuResponses
+                );
     }
 
 }
