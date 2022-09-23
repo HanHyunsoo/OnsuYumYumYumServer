@@ -39,9 +39,12 @@ public enum StatusEnum {
     CATEGORY_NOT_FOUND(NOT_FOUND, "해당 ID를 가진 카테고리 없음"),
     RESTAURANT_NOT_FOUND(NOT_FOUND, "해당 ID를 가진 음식점 없음"),
     IMAGE_NOT_FOUND(NOT_FOUND, "해당 ID를 가진 이미지파일 없음"),
+    MENU_NOT_FOUND(NOT_FOUND, "해당 ID를 가진 메뉴 없음"),
     LOCAL_FILE_NOT_FOUND(NOT_FOUND, "로컬 저장소에 파일이 존재하지 않음"),
 
     // 500
+    COULD_NOT_SAVE_FILE_IN_LOCAL(INTERNAL_SERVER_ERROR, "로컬 저장소에 파일을 저장 할 수 없습니다"),
+    COULD_NOT_SAVE_FILE_IN_S3(INTERNAL_SERVER_ERROR, "S3 저장소에 파일을 저장 할 수 없습니다"),
     COULD_NOT_LOAD_IMAGE_FILE(INTERNAL_SERVER_ERROR, "이미지 파일을 읽어오는 중에 오류가 발생했습니다.");
 
     private final HttpStatus httpStatus;
