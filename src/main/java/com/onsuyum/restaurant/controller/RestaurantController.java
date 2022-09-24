@@ -19,7 +19,7 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
 
     @PostMapping
-    public ResponseEntity<SuccessResponseBody> saveRestaurantWithRequest(@ModelAttribute RestaurantRequest dto) {
+    public ResponseEntity<SuccessResponseBody<RestaurantResponse>> saveRestaurantWithRequest(@ModelAttribute RestaurantRequest dto) {
         RestaurantResponse restaurantResponse = restaurantService.save(dto, true);
 
         return SuccessResponseBody
@@ -30,7 +30,7 @@ public class RestaurantController {
     }
 
     @GetMapping
-    public ResponseEntity<SuccessResponseBody> findAllRestaurantWithNotRequest(Pageable pageable,
+    public ResponseEntity<SuccessResponseBody<Page<RestaurantResponse>>> findAllRestaurantWithNotRequest(Pageable pageable,
                                                                                @RequestParam(name = "keyword", required = false) String name) {
         Page<RestaurantResponse> restaurantResponsePage;
         if (name.isBlank()) {
@@ -40,7 +40,7 @@ public class RestaurantController {
         }
 
         if (restaurantResponsePage.isEmpty()) {
-            return SuccessResponseBody.toResponseEntity(StatusEnum.NO_CONTENT_RESTAURANTS, null);
+            return SuccessResponseBody.toEmptyResponseEntity(StatusEnum.NO_CONTENT_RESTAURANTS);
         }
 
         return SuccessResponseBody
@@ -51,7 +51,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SuccessResponseBody> findRestaurantWithNotRequest(@PathVariable Long id) {
+    public ResponseEntity<SuccessResponseBody<RestaurantResponse>> findRestaurantWithNotRequest(@PathVariable Long id) {
         RestaurantResponse restaurantResponse = restaurantService.findByIdWithRequest(id, true);
 
         return SuccessResponseBody
@@ -62,7 +62,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/random")
-    public ResponseEntity<SuccessResponseBody> findRandomRestaurantWithNotRequest() {
+    public ResponseEntity<SuccessResponseBody<RestaurantResponse>> findRandomRestaurantWithNotRequest() {
         RestaurantResponse restaurantResponse = restaurantService.findRandomRestaurant();
 
         return SuccessResponseBody

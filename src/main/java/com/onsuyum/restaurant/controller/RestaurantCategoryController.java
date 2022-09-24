@@ -24,7 +24,7 @@ public class RestaurantCategoryController {
     private final RestaurantCategoryService restaurantCategoryService;
 
     @PostMapping("/restaurants/{id}/categories")
-    public ResponseEntity<SuccessResponseBody> saveAllRestaurantCategoryById(@PathVariable Long id, @RequestBody Set<String> categoryNames) {
+    public ResponseEntity<SuccessResponseBody<Map<String, Object>>> saveAllRestaurantCategoryById(@PathVariable Long id, @RequestBody Set<String> categoryNames) {
         if (categoryNames.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "카테고리를 한개 이상 요청 보내야 합니다.");
         }
@@ -39,11 +39,11 @@ public class RestaurantCategoryController {
     }
 
     @GetMapping("/restaurants/{id}/categories")
-    public ResponseEntity<SuccessResponseBody> findAllCategoryByRestaurantId(@PathVariable Long id, Pageable pageable) {
+    public ResponseEntity<SuccessResponseBody<Page<CategoryResponse>>> findAllCategoryByRestaurantId(@PathVariable Long id, Pageable pageable) {
         Page<CategoryResponse> categoryResponsePage = restaurantCategoryService.findAllCategoryByRestaurantIdWithRequest(pageable, id, true);
 
         if (categoryResponsePage.isEmpty()) {
-            return SuccessResponseBody.toResponseEntity(StatusEnum.NO_CONTENT_RESTAURANTS, null);
+            return SuccessResponseBody.toEmptyResponseEntity(StatusEnum.NO_CONTENT_RESTAURANTS);
         }
 
         return SuccessResponseBody
@@ -54,11 +54,11 @@ public class RestaurantCategoryController {
     }
 
     @GetMapping("/categories/{id}/restaurants")
-    public ResponseEntity<SuccessResponseBody> findAllRestaurantByCategoryId(@PathVariable Long id, Pageable pageable) {
+    public ResponseEntity<SuccessResponseBody<Page<RestaurantResponse>>> findAllRestaurantByCategoryId(@PathVariable Long id, Pageable pageable) {
         Page<RestaurantResponse> restaurantResponsePage = restaurantCategoryService.findAllRestaurantByCategoryIdWithRequest(pageable, id);
 
         if (restaurantResponsePage.isEmpty()) {
-            return SuccessResponseBody.toResponseEntity(StatusEnum.NO_CONTENT_CATEGORIES, null);
+            return SuccessResponseBody.toEmptyResponseEntity(StatusEnum.NO_CONTENT_CATEGORIES);
         }
 
         return SuccessResponseBody

@@ -21,15 +21,11 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<SuccessResponseBody> findAll(Pageable pageable) {
+    public ResponseEntity<SuccessResponseBody<Page<CategoryResponse>>> findAll(Pageable pageable) {
         Page<CategoryResponse> categoryResponsePage = categoryService.findAll(pageable);
 
         if (categoryResponsePage.isEmpty()) {
-            return SuccessResponseBody
-                    .toResponseEntity(
-                            StatusEnum.NO_CONTENT_CATEGORIES,
-                            null
-                    );
+            return SuccessResponseBody.toEmptyResponseEntity(StatusEnum.NO_CONTENT_CATEGORIES);
         }
 
         return SuccessResponseBody
@@ -40,7 +36,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SuccessResponseBody> findById(@PathVariable Long id) {
+    public ResponseEntity<SuccessResponseBody<CategoryResponse>> findById(@PathVariable Long id) {
         CategoryResponse categoryResponse = categoryService.findById(id);
 
         return SuccessResponseBody

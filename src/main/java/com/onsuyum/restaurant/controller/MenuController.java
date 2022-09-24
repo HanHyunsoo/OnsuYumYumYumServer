@@ -19,7 +19,7 @@ public class MenuController {
     private final MenuService menuService;
 
     @PostMapping("/{id}/menus")
-    public ResponseEntity<SuccessResponseBody> saveAll(@PathVariable Long id, @ModelAttribute MenuRequestForm menuRequestForm) {
+    public ResponseEntity<SuccessResponseBody<List<MenuResponse>>> saveAll(@PathVariable Long id, @ModelAttribute MenuRequestForm menuRequestForm) {
         List<MenuResponse> menuResponses = menuService.saveAllWithRequest(id, menuRequestForm.getMenuRequestList(), true);
 
         return SuccessResponseBody
@@ -30,11 +30,11 @@ public class MenuController {
     }
 
     @GetMapping("/{id}/menus")
-    public ResponseEntity<SuccessResponseBody> findAllByRestaurantId(@PathVariable Long id) {
+    public ResponseEntity<SuccessResponseBody<List<MenuResponse>>> findAllByRestaurantId(@PathVariable Long id) {
         List<MenuResponse> menuResponses = menuService.findAllByRestaurantIdWithRequest(id, true);
 
         if (menuResponses.isEmpty()) {
-            return SuccessResponseBody.toResponseEntity(StatusEnum.NO_CONTENT_MENUS, null);
+            return SuccessResponseBody.toEmptyResponseEntity(StatusEnum.NO_CONTENT_MENUS);
         }
 
         return SuccessResponseBody
