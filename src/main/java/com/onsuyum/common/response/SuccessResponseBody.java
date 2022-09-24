@@ -10,9 +10,11 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 @Getter
 public class SuccessResponseBody<T> extends AbstractResponseBody {
-    @Schema(description = "데이터 내용", anyOf = {CategoryResponse.class, MenuResponse.class, RestaurantResponse.class, ImageFileResponse.class})
+    @Schema(description = "데이터 내용", anyOf = {CategoryResponse.class, MenuResponse.class, RestaurantResponse.class, ImageFileResponse.class, List.class})
     private final T data;
 
     @Builder
