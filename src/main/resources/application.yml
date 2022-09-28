@@ -19,6 +19,10 @@ cors:
 # jwt secret key 설정
 jwt.secret: ${jwt-secret-key}
 
+dummy-data-json-path: "/Users/hanhyunsoo/Desktop/onsuyum_storage/dummy data.json"
+dummy-data-images-path: "/Users/hanhyunsoo/Desktop/onsuyum_storage/download/"
+alt-image-path: "/Users/hanhyunsoo/dev/spring/onsuyum/src/test/java/com/onsuyum/alt.png"
+
 ---
 # 개발 환경
 spring:
@@ -64,7 +68,7 @@ spring:
       on-profile: development
 
 cors:
-  allowed-origins: 'http://localhost:3000'
+  allowed-origins: "http://localhost:3000"
 
 logging:
   level:
@@ -78,13 +82,53 @@ logging:
           descriptor:
             sql: trace
 
-dummy-data-json-path: "/Users/hanhyunsoo/Desktop/onsuyum_storage/dummy data.json"
-dummy-data-images-path: "/Users/hanhyunsoo/Desktop/onsuyum_storage/download/"
-alt-image-path: "/Users/hanhyunsoo/dev/spring/onsuyum/src/test/java/com/onsuyum/alt.png"
-
 ---
 # 배포 환경
+# 개발 환경
 spring:
+  # 데이터 소스 설정
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://hyunsoo-mysql.cbwgo0eureu4.ap-northeast-2.rds.amazonaws.com:3306/onsuyum
+    username: sa
+    password:
+    hikari:
+      pool-name: jpa-hikari-pool
+      maximum-pool-size: 5
+      jdbc-url: jdbc:mysql://hyunsoo-mysql.cbwgo0eureu4.ap-northeast-2.rds.amazonaws.com:3306/onsuyum
+      username: ${rds_username}
+      password: ${rds_password}
+      driver-class-name: ${spring.datasource.driver-class-name}
+      data-source-properties:
+        rewriteBatchedStatements: true
+  # JPA 설정
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: validate
+    show-sql: off
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        hbm2ddl.import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
+        current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
+        default_batch_fetch_size: ${chunkSize:100}
+        jdbc.batch_size: 20
+        order_inserts: true
+        order_updates: true
+  # Request file 설정
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 50MB
+      location: ${upload_location}
   config:
     activate:
       on-profile: production
+  devtools:
+    livereload:
+      enabled: off
+
+cors:
+  # TODO 실제로 배포할때 localhost 제거해야함
+  allowed-origins: http://localhost:3000, https://www.onsuyum.com
