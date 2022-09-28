@@ -161,7 +161,7 @@ public class RestaurantService {
     }
 
     void validIsRequest(Restaurant restaurant) {
-        if (!restaurant.isRequest()) {
+        if (restaurant.isRequest()) {
             throw new ForbiddenRestaurantException();
         }
     }

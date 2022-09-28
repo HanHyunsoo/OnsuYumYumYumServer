@@ -61,7 +61,7 @@ public class RestaurantController {
     public ResponseEntity<SuccessResponseBody<Page<RestaurantResponse>>> findAllRestaurantWithNotRequest(Pageable pageable,
                                                                                                          @RequestParam(name = "keyword", required = false) @Parameter(description = "음식점의 이름 키워드") String name) {
         Page<RestaurantResponse> restaurantResponsePage;
-        if (name.isBlank()) {
+        if (name == null || name.isBlank()) {
             restaurantResponsePage = restaurantService.findAllByRequest(pageable, false);
         } else {
             restaurantResponsePage = restaurantService.findAllByNameAndRequest(pageable, name, false);
