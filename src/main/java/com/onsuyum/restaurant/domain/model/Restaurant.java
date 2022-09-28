@@ -26,7 +26,7 @@ public class Restaurant extends BaseTimeEntity {
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
-    @Column(name = "is_request", nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(name = "is_request", nullable = false, columnDefinition = "BIT(1)")
     private boolean isRequest;
 
     @Column(name = "name", nullable = false)

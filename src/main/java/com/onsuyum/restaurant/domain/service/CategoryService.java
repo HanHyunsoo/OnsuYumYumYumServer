@@ -1,15 +1,14 @@
 package com.onsuyum.restaurant.domain.service;
 
+import com.onsuyum.common.exception.CategoryNotFoundException;
 import com.onsuyum.restaurant.domain.model.Category;
 import com.onsuyum.restaurant.domain.repository.CategoryRepository;
 import com.onsuyum.restaurant.dto.response.CategoryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Set;
@@ -59,13 +58,7 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     Category findEntityById(Long id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                String.format("카테고리(pk = %d) 정보 DB에 존재하지 않습니다.", id)
-                        )
-                );
+        return categoryRepository.findById(id).orElseThrow(CategoryNotFoundException::new);
     }
 
     @Transactional

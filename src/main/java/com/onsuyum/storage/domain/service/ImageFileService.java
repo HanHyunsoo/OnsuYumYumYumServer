@@ -1,16 +1,16 @@
 package com.onsuyum.storage.domain.service;
 
+import com.onsuyum.common.exception.ImageNotFoundException;
+import com.onsuyum.common.exception.LocalFileNotFoundException;
 import com.onsuyum.storage.domain.model.ImageFile;
 import com.onsuyum.storage.domain.repository.ImageFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -27,6 +27,7 @@ public class ImageFileService {
     @Transactional
     public ImageFile save(MultipartFile file) {
         String newFileName = createRandomFileName(file.getOriginalFilename());
+        // TODO S3 용량 때문에 잠깐 막아둠, 실서비스를 사용할 때는 주석 제거하기
 //        String s3Url = s3StorageService.upload(file, newFileName);
         String s3Url = "";
         localStorageService.upload(file, newFileName);
@@ -42,12 +43,11 @@ public class ImageFileService {
 
     @Transactional(readOnly = true)
     public Resource getResourceById(Long id) {
-        ImageFile imageFile = imageFileRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "이미지 파일을 찾을 수 없음"));
+        ImageFile imageFile = imageFileRepository.findById(id).orElseThrow(ImageNotFoundException::new);
 
         Resource resource = new FileSystemResource(localFilePath + "/" + imageFile.getConvertedName());
         if (!resource.exists()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "로컬에서 파일을 찾을 수 없음");
+            throw new LocalFileNotFoundException();
         }
 
         return resource;
@@ -55,8 +55,7 @@ public class ImageFileService {
 
     @Transactional
     public void delete(Long id) {
-        ImageFile imageFile = imageFileRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "이미지 파일을 찾을 수 없음"));
+        ImageFile imageFile = imageFileRepository.findById(id).orElseThrow(ImageNotFoundException::new);
 
         s3StorageService.delete(imageFile.getConvertedName());
         localStorageService.delete(imageFile.getConvertedName());

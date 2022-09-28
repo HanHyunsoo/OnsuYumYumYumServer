@@ -1,5 +1,6 @@
 package com.onsuyum.restaurant.domain.service;
 
+import com.onsuyum.common.exception.MenuNotFoundException;
 import com.onsuyum.restaurant.domain.model.Menu;
 import com.onsuyum.restaurant.domain.model.Restaurant;
 import com.onsuyum.restaurant.domain.repository.MenuRepository;
@@ -8,10 +9,8 @@ import com.onsuyum.restaurant.dto.response.MenuResponse;
 import com.onsuyum.storage.domain.model.ImageFile;
 import com.onsuyum.storage.domain.service.ImageFileService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -151,12 +150,6 @@ public class MenuService {
     // Service Layer 내에서 사용 가능한 메서드
 
     Menu findEntityById(Long id) {
-        return menuRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                String.format("메뉴(pk = %d) 정보가 DB에 존재하지 않습니다.", id)
-                        )
-                );
+        return menuRepository.findById(id).orElseThrow(MenuNotFoundException::new);
     }
 }
