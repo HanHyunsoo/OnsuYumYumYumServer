@@ -13,7 +13,7 @@
 
 ## Getting start
 
-### Coming soon
+[온수냠냠냠 API](http://15.164.95.53:8080/swagger-ui/index.html)
 
 ## Used Teck stack
 
@@ -28,9 +28,13 @@
 ## Database ERD
 ![ERD](diagram.png)
 
-수정 가능성 
+수정 가능성 있음
 
 ## Api docs
+
+* Swagger를 이용한 문서 자동화
+
+![](swagger-example.png)
 
 ## License
 OnsuYumYumYum Server는 MIT License를 적용했습니다.
