@@ -1,6 +1,7 @@
 package com.onsuyum.security.domain.model;
 
 
+import com.onsuyum.security.dto.response.UserResponse;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,13 +12,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
 @Entity
-@Table(name = "user")
+@Table(name = "auth")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User implements UserDetails {
 
@@ -33,13 +35,12 @@ public class User implements UserDetails {
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @Builder.Default
-    private List<String> roles = new ArrayList<>();
+    private List<Role> roles = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(SimpleGrantedAuthority::new)
+                .map(x -> new SimpleGrantedAuthority(x.name()))
                 .collect(Collectors.toList());
     }
 
@@ -66,5 +67,26 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return false;
+    }
+
+    public void addRole(Role...role) {
+        Arrays.stream(role).forEach(x -> getRoles().add(x));
+    }
+
+    @Builder
+    public User(Long id, String username, String password) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+    }
+
+    public UserResponse toResponseDTO() {
+        return UserResponse.builder()
+                .username(username)
+                .roles(
+                        roles.stream()
+                                .map(Enum::name)
+                                .collect(Collectors.toList())
+                ).build();
     }
 }
