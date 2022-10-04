@@ -58,4 +58,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<FailureResponseBody> handleRestaurantTimeNotValidException(RestaurantTimeNotValidException e) {
         return FailureResponseBody.toResponseEntity(e.getStatusEnum());
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<FailureResponseBody> handleUserNotFoundException(UserNotFoundException e) {
+        return FailureResponseBody.toResponseEntity(e.getStatusEnum());
+    }
 }

@@ -41,6 +41,7 @@ public enum StatusEnum {
     IMAGE_NOT_FOUND(NOT_FOUND, "해당 ID를 가진 이미지파일 없음"),
     MENU_NOT_FOUND(NOT_FOUND, "해당 ID를 가진 메뉴 없음"),
     LOCAL_FILE_NOT_FOUND(NOT_FOUND, "로컬 저장소에 파일이 존재하지 않음"),
+    USER_NOT_FOUND(NOT_FOUND, "유저를 찾을 수 없음"),
 
     // 500
     COULD_NOT_SAVE_FILE_IN_LOCAL(INTERNAL_SERVER_ERROR, "로컬 저장소에 파일을 저장 할 수 없습니다"),
