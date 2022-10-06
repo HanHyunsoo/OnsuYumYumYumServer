@@ -20,7 +20,10 @@ public interface RestaurantCategoryRepository extends PagingAndSortingRepository
                     "from RestaurantCategory rc left join Category c " +
                     "on rc.category = c " +
                     "where rc.restaurant.isRequest = false ",
-            countQuery = "select count(rc) from RestaurantCategory rc"
+            countQuery = "select count(rc) " +
+                    "from RestaurantCategory rc left join Category c " +
+                    "on rc.category = c " +
+                    "where rc.restaurant.isRequest = false "
     )
     Page<RestaurantCategory> findAllByCategoryWithRequest(Pageable pageable, Category category);
 

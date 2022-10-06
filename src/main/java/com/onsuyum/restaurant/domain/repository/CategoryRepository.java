@@ -17,7 +17,10 @@ public interface CategoryRepository extends PagingAndSortingRepository<Category,
                     "on c.id = rc.category.id " +
                     "group by c " +
                     "order by count(rc) desc ",
-            countQuery = "select count(c) from Category c"
+            countQuery = "select count(c) " +
+                    "from Category c left join RestaurantCategory rc " +
+                    "on c.id = rc.category.id " +
+                    "group by c "
     )
     Page<Category> findAllWithRestaurantCount(Pageable pageable);
 }
