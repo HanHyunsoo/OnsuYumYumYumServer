@@ -1,15 +1,18 @@
 package com.onsuyum.config;
 
 import com.fasterxml.classmate.TypeResolver;
+import com.onsuyum.common.request.CustomPageable;
 import com.onsuyum.common.response.FailureResponseBody;
 import com.onsuyum.common.response.SuccessResponseBody;
 import com.onsuyum.restaurant.dto.request.MenuRequestForm;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.schema.AlternateTypeRules;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
@@ -34,6 +37,12 @@ public class SwaggerConfig {
     @Bean
     public Docket swaggerApi(TypeResolver typeResolver) {
         return new Docket(DocumentationType.OAS_30)
+                .alternateTypeRules(
+                        AlternateTypeRules.newRule(
+                                typeResolver.resolve(Pageable.class),
+                                typeResolver.resolve(CustomPageable.class)
+                        )
+                )
                 .additionalModels(
                         typeResolver.resolve(SuccessResponseBody.class),
                         typeResolver.resolve(FailureResponseBody.class),
