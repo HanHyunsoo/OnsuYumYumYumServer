@@ -20,7 +20,7 @@ public class CustomPageable {
     @Schema(description = "페이지 크기", allowableValues = "range[0, 100]", defaultValue = "10")
     private Integer size;
 
-    @Schema(description = "정렬(사용법: 컬럼명, ASC|DESC)", example = "price, desc, id, asc")
+    @Schema(description = "정렬(사용법: 컬럼명,ASC|DESC)", example = "price,desc,id,asc")
     private List<String> sort;
 
     @Builder
