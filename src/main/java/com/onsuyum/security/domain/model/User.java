@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Entity
-@Table(name = "auth")
+@Table(name = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User implements UserDetails {
 
