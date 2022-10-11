@@ -6,9 +6,12 @@ import com.onsuyum.restaurant.domain.model.Restaurant;
 import com.onsuyum.restaurant.domain.repository.MenuRepository;
 import com.onsuyum.restaurant.dto.request.MenuRequest;
 import com.onsuyum.restaurant.dto.response.MenuResponse;
+import com.onsuyum.restaurant.dto.response.RestaurantMenuResponse;
 import com.onsuyum.storage.domain.model.ImageFile;
 import com.onsuyum.storage.domain.service.ImageFileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +58,16 @@ public class MenuService {
         return menus.stream()
                 .map(Menu::toResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<RestaurantMenuResponse> findAllWithRequest(
+            Pageable pageable,
+            boolean isRequest,
+            Integer price) {
+        Page<Menu> menus = menuRepository.findAllByRequestAndPriceGreaterThanEqual(pageable, isRequest, price);
+
+        return menus.map(Menu::toResponseWithRestaurantDTO);
     }
 
     @Transactional(readOnly = true)

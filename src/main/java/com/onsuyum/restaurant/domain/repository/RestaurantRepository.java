@@ -24,7 +24,12 @@ public interface RestaurantRepository extends PagingAndSortingRepository<Restaur
                     "where r.isRequest = :isRequest " +
                     "group by r " +
                     "order by count(rc) desc ",
-            countQuery = "select count(r) from Restaurant r"
+            countQuery = "select count(r) " +
+                    "from Restaurant r left join RestaurantCategory rc " +
+                    "on r.id = rc.restaurant.id " +
+                    "where r.isRequest = :isRequest " +
+                    "group by r " +
+                    "order by count(rc) desc "
     )
     Page<Restaurant> findAllByRequestWithCategoryCount(Pageable pageable, @Param("isRequest") boolean isRequest);
 
@@ -43,7 +48,9 @@ public interface RestaurantRepository extends PagingAndSortingRepository<Restaur
             value = "select r " +
                     "from Restaurant r " +
                     "where r.name like %?1% and r.isRequest = ?2",
-            countQuery = "select count(r) from Restaurant r"
+            countQuery = "select count(r) " +
+                    "from Restaurant r " +
+                    "where r.name like %?1% and r.isRequest = ?2"
     )
     Page<Restaurant> findAllByNameLikeAndRequest(Pageable pageable, String name, boolean isRequest);
 }

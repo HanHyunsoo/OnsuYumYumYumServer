@@ -1,22 +1,24 @@
 package com.onsuyum.config;
 
 import com.fasterxml.classmate.TypeResolver;
+import com.onsuyum.common.request.CustomPageable;
 import com.onsuyum.common.response.FailureResponseBody;
 import com.onsuyum.common.response.SuccessResponseBody;
 import com.onsuyum.restaurant.dto.request.MenuRequestForm;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Tag;
+import springfox.documentation.schema.AlternateTypeRules;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Configuration
 @EnableWebMvc
@@ -32,8 +34,15 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public Docket swaggerApi(TypeResolver typeResolver) {
+    public Docket RestaurantApi(TypeResolver typeResolver) {
         return new Docket(DocumentationType.OAS_30)
+                .groupName("Restaurant API")
+                .alternateTypeRules(
+                        AlternateTypeRules.newRule(
+                                typeResolver.resolve(Pageable.class),
+                                typeResolver.resolve(CustomPageable.class)
+                        )
+                )
                 .additionalModels(
                         typeResolver.resolve(SuccessResponseBody.class),
                         typeResolver.resolve(FailureResponseBody.class),
@@ -42,7 +51,7 @@ public class SwaggerConfig {
                 .consumes(getConsumeContentTypes())
                 .produces(getProduceContentTypes())
                 .apiInfo(swaggerInfo()).select()
-                .apis(RequestHandlerSelectors.basePackage("com.onsuyum"))
+                .apis(RequestHandlerSelectors.basePackage("com.onsuyum.restaurant").or(RequestHandlerSelectors.basePackage("com.onsuyum.storage")))
                 .paths(PathSelectors.any())
                 .build()
                 .useDefaultResponseMessages(false)
@@ -52,6 +61,35 @@ public class SwaggerConfig {
                         new Tag("Restaurant Category API", "음식점과 카테고리의 관계에 대한 기능들"),
                         new Tag("Restaurant API", "음식점 관련 기능"),
                         new Tag("Image API", "이미지 관련 기능")
+                );
+    }
+
+    @Bean
+    public Docket SecurityApi(TypeResolver typeResolver) {
+        return new Docket(DocumentationType.OAS_30)
+                .groupName("Security API")
+                .securityContexts(Collections.singletonList(securityContext()))
+                .securitySchemes(Collections.singletonList(accessToken()))
+                .alternateTypeRules(
+                        AlternateTypeRules.newRule(
+                                typeResolver.resolve(Pageable.class),
+                                typeResolver.resolve(CustomPageable.class)
+                        )
+                )
+                .additionalModels(
+                        typeResolver.resolve(SuccessResponseBody.class),
+                        typeResolver.resolve(FailureResponseBody.class),
+                        typeResolver.resolve(MenuRequestForm.class)
+                )
+                .consumes(getConsumeContentTypes())
+                .produces(getProduceContentTypes())
+                .apiInfo(swaggerInfo()).select()
+                .apis(RequestHandlerSelectors.basePackage("com.onsuyum.security"))
+                .paths(PathSelectors.any())
+                .build()
+                .useDefaultResponseMessages(false)
+                .tags(
+                        new Tag("Auth API", "인증, 인가에 대한 API")
                 );
     }
 
@@ -68,5 +106,20 @@ public class SwaggerConfig {
         produces.add("image/png");
         produces.add("image/jpeg");
         return produces;
+    }
+
+    private ApiKey accessToken() {
+        return new ApiKey("Authorization", "Bearer", "header");
+    }
+
+    private SecurityContext securityContext() {
+        return SecurityContext.builder().securityReferences(defaultAuth()).build();
+    }
+
+    private List<SecurityReference> defaultAuth() {
+        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+        authorizationScopes[0] = authorizationScope;
+        return List.of(new SecurityReference("Authorization", authorizationScopes));
     }
 }

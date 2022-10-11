@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -17,11 +18,15 @@ public interface RestaurantCategoryRepository extends PagingAndSortingRepository
 
     @Query(
             value = "select rc " +
-                    "from RestaurantCategory rc " +
-                    "where rc.restaurant.isRequest = false",
-            countQuery = "select count(rc) from RestaurantCategory rc"
+                    "from RestaurantCategory rc left join Category c " +
+                    "on rc.category = c " +
+                    "where rc.restaurant.isRequest = false and c = :category ",
+            countQuery = "select count(rc) " +
+                    "from RestaurantCategory rc left join Category c " +
+                    "on rc.category = c " +
+                    "where rc.restaurant.isRequest = false and c = :category "
     )
-    Page<RestaurantCategory> findAllByCategoryWithRequest(Pageable pageable, Category category);
+    Page<RestaurantCategory> findAllByCategoryWithRequest(Pageable pageable, @Param("category") Category category);
 
     Page<RestaurantCategory> findAllByRestaurant(Pageable pageable, Restaurant restaurant);
 }

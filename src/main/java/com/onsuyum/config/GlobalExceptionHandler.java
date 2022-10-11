@@ -44,6 +44,11 @@ public class GlobalExceptionHandler {
         return FailureResponseBody.toResponseEntity(e.getStatusEnum());
     }
 
+    @ExceptionHandler(LoginFailException.class)
+    public ResponseEntity<FailureResponseBody> handleLoginFailException(LoginFailException e) {
+        return FailureResponseBody.toResponseEntity(e.getStatusEnum());
+    }
+
     @ExceptionHandler(MenuNotFoundException.class)
     public ResponseEntity<FailureResponseBody> handleMenuNotFoundException(MenuNotFoundException e) {
         return FailureResponseBody.toResponseEntity(e.getStatusEnum());
@@ -56,6 +61,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RestaurantTimeNotValidException.class)
     public ResponseEntity<FailureResponseBody> handleRestaurantTimeNotValidException(RestaurantTimeNotValidException e) {
+        return FailureResponseBody.toResponseEntity(e.getStatusEnum());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<FailureResponseBody> handleUserNotFoundException(UserNotFoundException e) {
         return FailureResponseBody.toResponseEntity(e.getStatusEnum());
     }
 }

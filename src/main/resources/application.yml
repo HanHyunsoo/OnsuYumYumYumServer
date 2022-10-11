@@ -17,11 +17,16 @@ cors:
   max-age: 3600
 
 # jwt secret key 설정
-jwt.secret: ${jwt-secret-key}
+jwt.secret: ${jwt_secret_key}
 
 dummy-data-json-path: "/Users/hanhyunsoo/Desktop/onsuyum_storage/dummy data.json"
 dummy-data-images-path: "/Users/hanhyunsoo/Desktop/onsuyum_storage/download/"
 alt-image-path: "/Users/hanhyunsoo/dev/spring/onsuyum/src/test/java/com/onsuyum/alt.png"
+
+spring:
+  jpa:
+    properties:
+      hibernate.order_by.default_null_ordering: last
 
 ---
 # 개발 환경

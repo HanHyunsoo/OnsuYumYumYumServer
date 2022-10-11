@@ -6,6 +6,7 @@ import com.onsuyum.common.response.SuccessResponseBody;
 import com.onsuyum.restaurant.domain.service.MenuService;
 import com.onsuyum.restaurant.dto.request.MenuRequestForm;
 import com.onsuyum.restaurant.dto.response.MenuResponse;
+import com.onsuyum.restaurant.dto.response.RestaurantMenuResponse;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,6 +14,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +46,8 @@ public class MenuController {
                     @ApiResponse(responseCode = "404", description = "해당 ID의 음식점이 존재하지 않습니다.", content = @Content(schema = @Schema(implementation = FailureResponseBody.class), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             }
     )
-    public ResponseEntity<SuccessResponseBody<List<MenuResponse>>> saveAll(@PathVariable @Parameter(description = "음식점 ID") Long id, @ModelAttribute @Parameter(description = "메뉴 requests") MenuRequestForm menuRequestForm) {
+    public ResponseEntity<SuccessResponseBody<List<MenuResponse>>> saveAll(@PathVariable @Parameter(description = "음식점 ID") Long id,
+                                                                           @Parameter(description = "메뉴 requests", schema = @Schema(type = "object")) @ModelAttribute MenuRequestForm menuRequestForm) {
         List<MenuResponse> menuResponses = menuService.saveAllWithRequest(id, menuRequestForm.getMenuRequestList(), true);
 
         return SuccessResponseBody
@@ -49,6 +55,27 @@ public class MenuController {
                         StatusEnum.SUCCESS_CREATE_MENUS,
                         menuResponses
                 );
+    }
+
+    @GetMapping(path = "/menus", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "모든 메뉴들 전체 조회",
+            description = "모든 메뉴들을 조회합니다. param에서 price의 값을 지정하면 해당 가격 이상의 메뉴만 보입니다. 기본적으로 sorting은 price asc로 되어있습니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "메뉴들 불러오기 성공"),
+                    @ApiResponse(responseCode = "204", description = "메뉴들 정보 없음")
+            }
+    )
+    public ResponseEntity<SuccessResponseBody<Page<RestaurantMenuResponse>>> findAll(
+            @PageableDefault(sort = "price", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(defaultValue = "0", required = false) @Parameter(description = "메뉴 가격")  Integer price) {
+        Page<RestaurantMenuResponse> restaurantMenuResponses = menuService.findAllWithRequest(pageable, false, price);
+
+        if (restaurantMenuResponses.isEmpty()) {
+            SuccessResponseBody.toEmptyResponseEntity(StatusEnum.NO_CONTENT_MENUS);
+        }
+
+        return SuccessResponseBody.toResponseEntity(StatusEnum.SUCCESS_GET_MENUS, restaurantMenuResponses);
     }
 
     @GetMapping(path = "/{id}/menus", produces = MediaType.APPLICATION_JSON_VALUE)
