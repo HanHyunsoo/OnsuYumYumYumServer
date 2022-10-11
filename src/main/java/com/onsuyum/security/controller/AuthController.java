@@ -35,7 +35,8 @@ public class AuthController {
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "로그인",
-            description = "아이디와 비밀번호를 입력받아서 DB에 존재하는 USER와 일치한다면 인증, 인가에 필요한 jwt 토큰을 생성해 반환합니다.",
+            description = "아이디와 비밀번호를 입력받아서 DB에 존재하는 USER와 일치한다면 인증, 인가에 필요한 jwt 토큰을 생성해 반환합니다. \n" +
+                    "스웨거 내에서 테스트 할려면 Authorize 버튼을 누르고 Bearer {access_token} 형식으로 값을 입력받으면 요청 보낼때 자동으로 토큰을 포함해서 보냅니다.",
             responses = {
                     @ApiResponse(responseCode = "201", description = "로그인 성공, access token 발급 성공"),
                     @ApiResponse(responseCode = "401", description = "로그인 실패(아이디는 존재, 비밀번호 틀림)", content = @Content(schema = @Schema(implementation = FailureResponseBody.class), mediaType = MediaType.APPLICATION_JSON_VALUE)),
