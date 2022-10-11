@@ -1,5 +1,6 @@
 package com.onsuyum.babful.domain.model;
 
+import com.onsuyum.babful.dto.response.BabfulMenuResponse;
 import com.onsuyum.common.domain.BaseTimeEntity;
 import com.onsuyum.common.util.StringListConverter;
 import lombok.AccessLevel;
@@ -45,5 +46,16 @@ public class BabfulMenu extends BaseTimeEntity {
         this.menuDate = menuDate;
         this.foods = foods;
         this.deliciousFood = deliciousFood;
+    }
+
+    public BabfulMenuResponse toResponseDTO() {
+        return BabfulMenuResponse.builder()
+                .id(id)
+                .menuDate(menuDate)
+                .foods(foods)
+                .deliciousFood(deliciousFood)
+                .createdDate(createdDate)
+                .modifiedDate(modifiedDate)
+                .build();
     }
 }
