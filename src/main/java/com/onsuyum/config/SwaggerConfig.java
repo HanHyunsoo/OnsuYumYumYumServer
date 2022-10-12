@@ -78,8 +78,7 @@ public class SwaggerConfig {
                 )
                 .additionalModels(
                         typeResolver.resolve(SuccessResponseBody.class),
-                        typeResolver.resolve(FailureResponseBody.class),
-                        typeResolver.resolve(MenuRequestForm.class)
+                        typeResolver.resolve(FailureResponseBody.class)
                 )
                 .consumes(getConsumeContentTypes())
                 .produces(getProduceContentTypes())
@@ -90,6 +89,32 @@ public class SwaggerConfig {
                 .useDefaultResponseMessages(false)
                 .tags(
                         new Tag("Auth API", "인증, 인가에 대한 API")
+                );
+    }
+
+    @Bean
+    public Docket BabFulApi(TypeResolver typeResolver) {
+        return new Docket(DocumentationType.OAS_30)
+                .groupName("Babful API")
+                .alternateTypeRules(
+                        AlternateTypeRules.newRule(
+                                typeResolver.resolve(Pageable.class),
+                                typeResolver.resolve(CustomPageable.class)
+                        )
+                )
+                .additionalModels(
+                        typeResolver.resolve(SuccessResponseBody.class),
+                        typeResolver.resolve(FailureResponseBody.class)
+                )
+                .consumes(getConsumeContentTypes())
+                .produces(getProduceContentTypes())
+                .apiInfo(swaggerInfo()).select()
+                .apis(RequestHandlerSelectors.basePackage("com.onsuyum.babful"))
+                .paths(PathSelectors.any())
+                .build()
+                .useDefaultResponseMessages(false)
+                .tags(
+                        new Tag("Babful Menu API", "밥풀 식단 메뉴에 대한 API")
                 );
     }
 

@@ -9,6 +9,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice(basePackages = "com.onsuyum")
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(BabfulMenuDateAlreadyExistsException.class)
+    public ResponseEntity<FailureResponseBody> handleBabfulMenuDateAlreadyExistsException(BabfulMenuDateAlreadyExistsException e) {
+        return FailureResponseBody.toResponseEntity(e.getStatusEnum());
+    }
+
+    @ExceptionHandler(BabfulMenuNotFoundException.class)
+    public ResponseEntity<FailureResponseBody> handleBabfulMenuNotFoundException(BabfulMenuNotFoundException e) {
+        return FailureResponseBody.toResponseEntity(e.getStatusEnum());
+    }
+
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<FailureResponseBody> handleCategoryNotFoundException(CategoryNotFoundException e) {
         return FailureResponseBody.toResponseEntity(e.getStatusEnum());

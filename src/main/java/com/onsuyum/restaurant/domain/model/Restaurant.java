@@ -1,6 +1,7 @@
 package com.onsuyum.restaurant.domain.model;
 
 import com.onsuyum.common.domain.BaseTimeEntity;
+import com.onsuyum.common.util.StringListConverter;
 import com.onsuyum.restaurant.dto.response.RestaurantResponse;
 import com.onsuyum.storage.domain.model.ImageFile;
 import lombok.AccessLevel;
@@ -11,7 +12,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -117,19 +117,5 @@ public class Restaurant extends BaseTimeEntity {
                 .createdDate(createdDate)
                 .modifiedDate(modifiedDate)
                 .build();
-    }
-}
-
-@Converter
-class StringListConverter implements AttributeConverter<List<String>, String> {
-    private static final String SPLIT_CHAR = ";!";
-    @Override
-    public String convertToDatabaseColumn(List<String> attribute) {
-        return String.join(SPLIT_CHAR, attribute);
-    }
-
-    @Override
-    public List<String> convertToEntityAttribute(String dbData) {
-        return Arrays.asList(dbData.split(SPLIT_CHAR));
     }
 }
