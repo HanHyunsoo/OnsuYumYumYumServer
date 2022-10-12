@@ -31,6 +31,7 @@ public enum StatusEnum {
 
     // 400
     NEED_CATEGORY_VALUE(BAD_REQUEST, "카테고리를 한개 이상 요청 보내야 합니다."),
+    BABFUL_MENU_DATE_ALREADY_EXISTS(BAD_REQUEST, "이미 해당 날짜에 밥풀 식단 데이터가 존재합니다."),
 
     // 401
     LOGIN_FAIL(UNAUTHORIZED, "아이디 또는 비밀번호가 잘못되어 로그인을 할 수 없습니다."),
@@ -47,6 +48,7 @@ public enum StatusEnum {
     RESTAURANT_NOT_FOUND(NOT_FOUND, "해당 ID를 가진 음식점 없음"),
     IMAGE_NOT_FOUND(NOT_FOUND, "해당 ID를 가진 이미지파일 없음"),
     MENU_NOT_FOUND(NOT_FOUND, "해당 ID를 가진 메뉴 없음"),
+    BABFUL_MENU_NOT_FOUND(NOT_FOUND, "해당 ID를 가진 밥풀 식단 없음"),
     LOCAL_FILE_NOT_FOUND(NOT_FOUND, "로컬 저장소에 파일이 존재하지 않음"),
     USER_NOT_FOUND(NOT_FOUND, "유저를 찾을 수 없음"),
 
