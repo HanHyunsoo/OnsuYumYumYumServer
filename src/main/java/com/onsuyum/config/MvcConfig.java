@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -41,13 +40,5 @@ public class MvcConfig implements WebMvcConfigurer {
                 .deserializerByType(LocalDate.class, new LocalDateDeserializer(dateFormatter))
                 .build();
         converters.add(0, new MappingJackson2HttpMessageConverter(objectMapper));
-    }
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins(corsOrigins)
-                .allowedMethods("*")
-                .allowCredentials(false)
-                .maxAge(3000);
     }
 }
