@@ -50,7 +50,7 @@ spring:
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -99,7 +99,7 @@ spring:
     password:
     hikari:
       pool-name: jpa-hikari-pool
-      maximum-pool-size: 5
+      maximum-pool-size: 50
       jdbc-url: jdbc:mysql://hyunsoo-mysql.cbwgo0eureu4.ap-northeast-2.rds.amazonaws.com:3306/onsuyum
       username: ${rds_username}
       password: ${rds_password}
@@ -110,7 +110,7 @@ spring:
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: off
     properties:
       hibernate:
@@ -136,4 +136,4 @@ spring:
 
 cors:
   # TODO 실제로 배포할때 localhost 제거해야함
-  allowed-origins: http://localhost:3000, https://www.onsuyum.com
+  allowed-origins: http://localhost:3000, https://www.onsuyum.com, https://api.onsuyum.com
