@@ -15,6 +15,10 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
 
     @Override
     public List<String> convertToEntityAttribute(String dbData) {
-        return Arrays.asList(dbData.split(SPLIT_CHAR));
+        if (dbData.isBlank()) {
+            return null;
+        } else {
+            return Arrays.asList(dbData.split(SPLIT_CHAR));
+        }
     }
 }
