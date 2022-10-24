@@ -4,7 +4,7 @@ import com.onsuyum.common.StatusEnum;
 import com.onsuyum.common.response.FailureResponseBody;
 import com.onsuyum.common.response.SuccessResponseBody;
 import com.onsuyum.restaurant.domain.service.MenuService;
-import com.onsuyum.restaurant.dto.request.ModelAttributeMenuRequest;
+import com.onsuyum.restaurant.dto.request.MultipartMenuRequestList;
 import com.onsuyum.restaurant.dto.response.MenuResponse;
 import com.onsuyum.restaurant.dto.response.RestaurantMenuResponse;
 import io.swagger.annotations.Api;
@@ -47,8 +47,8 @@ public class MenuController {
             }
     )
     public ResponseEntity<SuccessResponseBody<List<MenuResponse>>> saveAll(@PathVariable @Parameter(description = "음식점 ID") Long id,
-                                                                           @Parameter(description = "메뉴 requests", schema = @Schema(type = "object")) @ModelAttribute ModelAttributeMenuRequest modelAttributeMenuRequest) {
-        List<MenuResponse> menuResponses = menuService.saveAllWithRequest(id, modelAttributeMenuRequest.getMenuRequestList(), true);
+                                                                           @Parameter(description = "메뉴 requests", schema = @Schema(type = "object")) @ModelAttribute MultipartMenuRequestList multipartMenuRequestList) {
+        List<MenuResponse> menuResponses = menuService.saveAllWithRequest(id, multipartMenuRequestList.getMenuRequestList(), true);
 
         return SuccessResponseBody
                 .toResponseEntity(

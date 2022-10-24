@@ -4,7 +4,7 @@ import com.fasterxml.classmate.TypeResolver;
 import com.onsuyum.common.request.CustomPageable;
 import com.onsuyum.common.response.FailureResponseBody;
 import com.onsuyum.common.response.SuccessResponseBody;
-import com.onsuyum.restaurant.dto.request.ModelAttributeMenuRequest;
+import com.onsuyum.restaurant.dto.request.MultipartMenuRequestList;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Pageable;
@@ -46,7 +46,7 @@ public class SwaggerConfig {
                 .additionalModels(
                         typeResolver.resolve(SuccessResponseBody.class),
                         typeResolver.resolve(FailureResponseBody.class),
-                        typeResolver.resolve(ModelAttributeMenuRequest.class)
+                        typeResolver.resolve(MultipartMenuRequestList.class)
                 )
                 .consumes(getConsumeContentTypes())
                 .produces(getProduceContentTypes())

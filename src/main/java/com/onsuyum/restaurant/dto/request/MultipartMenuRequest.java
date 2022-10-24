@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 @NoArgsConstructor
-@Schema(description = "메뉴 Request")
+@Schema(description = "메뉴 Request(with multipart/form-data)")
 @SuperBuilder
 public class MultipartMenuRequest extends JsonMenuRequest {
     @Schema(description = "사진")
