@@ -40,13 +40,14 @@ public class Menu extends BaseTimeEntity {
     @JoinColumn(name = "menu_image")
     private ImageFile menuImage;
 
-    public void update(String name, Integer price, String description, ImageFile menuImage) {
+    public void update(String name, Integer price, String description) {
         this.name = name;
         this.price = price;
         this.description = description;
-        if (menuImage != null) {
-            this.menuImage = menuImage;
-        }
+    }
+
+    public void updateImage(ImageFile menuImage) {
+        this.menuImage = menuImage;
     }
 
     @Builder
