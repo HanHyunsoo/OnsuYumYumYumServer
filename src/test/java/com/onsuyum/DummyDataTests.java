@@ -4,7 +4,7 @@ import com.onsuyum.restaurant.domain.service.MenuService;
 import com.onsuyum.restaurant.domain.service.RestaurantCategoryService;
 import com.onsuyum.restaurant.domain.service.RestaurantService;
 import com.onsuyum.restaurant.dto.request.MultipartMenuRequest;
-import com.onsuyum.restaurant.dto.request.RestaurantRequest;
+import com.onsuyum.restaurant.dto.request.MultipartRestaurantRequest;
 import com.onsuyum.restaurant.dto.response.MenuResponse;
 import com.onsuyum.restaurant.dto.response.RestaurantResponse;
 import com.onsuyum.security.domain.model.Role;
@@ -75,11 +75,11 @@ public class DummyDataTests {
         for (Object object : list) {
             Map<String, Object> map = (Map<String, Object>) object;
 
-            RestaurantRequest restaurantRequest = toRestaurantRequest(map);
+            MultipartRestaurantRequest multipartRestaurantRequest = toRestaurantRequest(map);
             Set<String> categoryNames = new HashSet<>((List<String>) map.get("category"));
             List<MultipartMenuRequest> multipartMenuRequestList = toMenuRequestList((List<Map<String, Object>>) map.get("menu"));
 
-            RestaurantResponse restaurantResponse = restaurantService.save(restaurantRequest, false);
+            RestaurantResponse restaurantResponse = restaurantService.save(multipartRestaurantRequest, false);
             Map<String, Object> responseMap = restaurantCategoryService.saveAllRestaurantCategory(restaurantResponse.getId(), categoryNames);
             List<MenuResponse> menuResponses = menuService.saveAll(restaurantResponse.getId(), multipartMenuRequestList);
         }
@@ -136,8 +136,8 @@ public class DummyDataTests {
         return multipartFile;
     }
 
-    private RestaurantRequest toRestaurantRequest(Map<String, Object> map) {
-        return RestaurantRequest.builder()
+    private MultipartRestaurantRequest toRestaurantRequest(Map<String, Object> map) {
+        return MultipartRestaurantRequest.builder()
                 .name((String) map.get("name"))
                 .phone((String) map.get("phone"))
                 .time(validTimeList((List<String>) map.get("time")))

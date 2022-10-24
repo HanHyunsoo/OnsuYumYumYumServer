@@ -65,7 +65,7 @@ public class Restaurant extends BaseTimeEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "restaurant", fetch = FetchType.LAZY)
     private List<RestaurantCategory> restaurantCategories = new ArrayList<>();
 
-    public void update(boolean isRequest, String name, String phone, List<String> time, String summary, String location, Double longitude, Double latitude, ImageFile outsideImage, ImageFile insideImage) {
+    public void update(boolean isRequest, String name, String phone, List<String> time, String summary, String location, Double longitude, Double latitude) {
         this.isRequest = isRequest;
         this.name = name;
         this.phone = phone;
@@ -74,12 +74,14 @@ public class Restaurant extends BaseTimeEntity {
         this.location = location;
         this.longitude = longitude;
         this.latitude = latitude;
-        if (outsideImage != null) {
-            this.outsideImage = outsideImage;
-        }
-        if (insideImage != null) {
-            this.insideImage = insideImage;
-        }
+    }
+
+    public void updateOutsideImage(ImageFile outsideImage) {
+        this.outsideImage = outsideImage;
+    }
+
+    public void updateInsideImage(ImageFile insideImage) {
+        this.insideImage = insideImage;
     }
 
     public void changeIsRequest() {

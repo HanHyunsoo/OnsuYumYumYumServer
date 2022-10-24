@@ -1,19 +1,17 @@
 package com.onsuyum.restaurant.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Getter
-@Setter
-@Schema(description = "음식점 Request")
-public class RestaurantRequest {
-    @Schema(description = "음식점 id(수정할 때만 필요)", example = "1")
-    private Long id;
+@NoArgsConstructor
+@Schema(description = "음식점 Request(with application/json)")
+@SuperBuilder
+public class JsonRestaurantRequest {
     @Schema(description = "이름", example = "토마토", required = true)
     private String name;
     @Schema(description = "전화번호", example = "02-2060-0029")
@@ -36,14 +34,8 @@ public class RestaurantRequest {
     private Double longitude;
     @Schema(description = "위도", example = "1.5")
     private Double latitude;
-    @Schema(description = "외부 이미지")
-    private MultipartFile outsideImage;
-    @Schema(description = "내부 이미지")
-    private MultipartFile insideImage;
 
-    @Builder
-    public RestaurantRequest(Long id, String name, String phone, List<String> time, String summary, String location, Double longitude, Double latitude, MultipartFile outsideImage, MultipartFile insideImage) {
-        this.id = id;
+    public JsonRestaurantRequest(String name, String phone, List<String> time, String summary, String location, Double longitude, Double latitude) {
         this.name = name;
         this.phone = phone;
         this.time = time;
@@ -51,7 +43,5 @@ public class RestaurantRequest {
         this.location = location;
         this.longitude = longitude;
         this.latitude = latitude;
-        this.outsideImage = outsideImage;
-        this.insideImage = insideImage;
     }
 }
