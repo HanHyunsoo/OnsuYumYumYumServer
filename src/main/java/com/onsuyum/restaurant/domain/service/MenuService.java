@@ -1,10 +1,13 @@
 package com.onsuyum.restaurant.domain.service;
 
+import com.onsuyum.common.exception.MenuImageAlreadyExistsException;
+import com.onsuyum.common.exception.MenuImageNotExistsException;
 import com.onsuyum.common.exception.MenuNotFoundException;
 import com.onsuyum.restaurant.domain.model.Menu;
 import com.onsuyum.restaurant.domain.model.Restaurant;
 import com.onsuyum.restaurant.domain.repository.MenuRepository;
-import com.onsuyum.restaurant.dto.request.MenuRequest;
+import com.onsuyum.restaurant.dto.request.JsonMenuRequest;
+import com.onsuyum.restaurant.dto.request.MultipartMenuRequest;
 import com.onsuyum.restaurant.dto.response.MenuResponse;
 import com.onsuyum.restaurant.dto.response.RestaurantMenuResponse;
 import com.onsuyum.storage.domain.model.ImageFile;
@@ -14,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +30,7 @@ public class MenuService {
     private final ImageFileService imageFileService;
 
     @Transactional
-    public MenuResponse save(Long id, MenuRequest dto) {
+    public MenuResponse save(Long id, MultipartMenuRequest dto) {
         Restaurant restaurant = restaurantService.findEntityById(id);
 
         Menu menu = dtoToMenu(restaurant, dto);
@@ -36,12 +40,25 @@ public class MenuService {
     }
 
     @Transactional
-    public List<MenuResponse> saveAll(Long id, List<MenuRequest> dtos) {
+    public MenuResponse saveMenuImageById(Long id, MultipartFile requestImageFile) {
+        Menu menu = findEntityById(id);
+        ImageFile menuImage = menu.getMenuImage();
+
+        if (menuImage != null) throw new MenuImageAlreadyExistsException();
+
+        ImageFile newMenuImage = imageFileService.save(requestImageFile);
+        menu.updateImage(newMenuImage);
+
+        return menuRepository.save(menu).toResponseDTO();
+    }
+
+    @Transactional
+    public List<MenuResponse> saveAll(Long id, List<MultipartMenuRequest> dtos) {
         return saveAllWithRequest(id, dtos, false);
     }
 
     @Transactional
-    public List<MenuResponse> saveAllWithRequest(Long id, List<MenuRequest> dtos, boolean checkRequest) {
+    public List<MenuResponse> saveAllWithRequest(Long id, List<MultipartMenuRequest> dtos, boolean checkRequest) {
         Restaurant restaurant = restaurantService.findEntityById(id);
 
         if (checkRequest) {
@@ -96,19 +113,13 @@ public class MenuService {
     }
 
     @Transactional
-    public MenuResponse update(Long id, MenuRequest dto) {
+    public MenuResponse update(Long id, JsonMenuRequest dto) {
         Menu menu = findEntityById(id);
-        ImageFile menuImage = menu.getMenuImage();
-        if (dto.getMenuImage() != null) {
-            imageFileService.delete(menuImage.getId());
-            menuImage = imageFileService.save(dto.getMenuImage());
-        }
 
         menu.update(
                 dto.getName(),
                 dto.getPrice(),
-                dto.getDescription(),
-                menuImage
+                dto.getDescription()
         );
 
         menu = menuRepository.save(menu);
@@ -116,24 +127,39 @@ public class MenuService {
         return menu.toResponseDTO();
     }
 
-    @Transactional
-    public List<MenuResponse> updateAll(List<MenuRequest> dtos) {
-        return dtos.stream()
-                .map(dto -> update(dto.getId(), dto))
-                .collect(Collectors.toList());
-    }
+//    @Transactional
+//    public List<MenuResponse> updateAll(List<MenuRequest> dtos) {
+//        return dtos.stream()
+//                .map(dto -> update(dto.getId(), dto))
+//                .collect(Collectors.toList());
+//    }
 
     @Transactional
     public void deleteById(Long id) {
         Menu menu = findEntityById(id);
+        imageFileService.delete(menu.getMenuImage().getId());
 
         menuRepository.delete(menu);
     }
 
     @Transactional
+    public void deleteMenuImageById(Long id) {
+        Menu menu = findEntityById(id);
+        if (menu.getMenuImage() == null) throw new MenuImageNotExistsException();
+
+        imageFileService.delete(menu.getMenuImage().getId());
+        menu.updateImage(null);
+    }
+
+    @Transactional
     public void deleteAllByIds(List<Long> ids) {
         List<Menu> menus = ids.stream()
-                .map(this::findEntityById)
+                .map(menuId -> {
+                    Menu menu = findEntityById(menuId);
+                    imageFileService.delete(menu.getMenuImage().getId());
+                    menu.updateImage(null);
+                    return menu;
+                })
                 .collect(Collectors.toList());
 
         menuRepository.deleteAll(menus);
@@ -142,10 +168,14 @@ public class MenuService {
     @Transactional
     public void deleteAllByRestaurantId(Long id) {
         Restaurant restaurant = restaurantService.findEntityById(id);
-        menuRepository.deleteAllByRestaurant(restaurant);
+        List<Menu> menus = restaurant.getMenu();
+
+        menus.forEach(menu -> imageFileService.delete(menu.getMenuImage().getId()));
+
+        menuRepository.deleteAll(menus);
     }
 
-    private Menu dtoToMenu(Restaurant restaurant, MenuRequest dto) {
+    private Menu dtoToMenu(Restaurant restaurant, MultipartMenuRequest dto) {
         ImageFile menuImage = null;
         if (dto.getMenuImage() != null) {
             menuImage = imageFileService.save(dto.getMenuImage());

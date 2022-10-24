@@ -4,7 +4,7 @@ import com.fasterxml.classmate.TypeResolver;
 import com.onsuyum.common.request.CustomPageable;
 import com.onsuyum.common.response.FailureResponseBody;
 import com.onsuyum.common.response.SuccessResponseBody;
-import com.onsuyum.restaurant.dto.request.MenuRequestForm;
+import com.onsuyum.restaurant.dto.request.ModelAttributeMenuRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Pageable;
@@ -46,7 +46,7 @@ public class SwaggerConfig {
                 .additionalModels(
                         typeResolver.resolve(SuccessResponseBody.class),
                         typeResolver.resolve(FailureResponseBody.class),
-                        typeResolver.resolve(MenuRequestForm.class)
+                        typeResolver.resolve(ModelAttributeMenuRequest.class)
                 )
                 .consumes(getConsumeContentTypes())
                 .produces(getProduceContentTypes())
@@ -83,12 +83,13 @@ public class SwaggerConfig {
                 .consumes(getConsumeContentTypes())
                 .produces(getProduceContentTypes())
                 .apiInfo(swaggerInfo()).select()
-                .apis(RequestHandlerSelectors.basePackage("com.onsuyum.security"))
+                .apis(RequestHandlerSelectors.basePackage("com.onsuyum.security").or(RequestHandlerSelectors.basePackage("com.onsuyum.admin")))
                 .paths(PathSelectors.any())
                 .build()
                 .useDefaultResponseMessages(false)
                 .tags(
-                        new Tag("Auth API", "인증, 인가에 대한 API")
+                        new Tag("Auth API", "인증, 인가에 대한 API"),
+                        new Tag("Admin Menu API", "어드민 메뉴 API")
                 );
     }
 

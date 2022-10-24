@@ -3,10 +3,14 @@ package com.onsuyum;
 import com.onsuyum.restaurant.domain.service.MenuService;
 import com.onsuyum.restaurant.domain.service.RestaurantCategoryService;
 import com.onsuyum.restaurant.domain.service.RestaurantService;
-import com.onsuyum.restaurant.dto.request.MenuRequest;
+import com.onsuyum.restaurant.dto.request.MultipartMenuRequest;
 import com.onsuyum.restaurant.dto.request.RestaurantRequest;
 import com.onsuyum.restaurant.dto.response.MenuResponse;
 import com.onsuyum.restaurant.dto.response.RestaurantResponse;
+import com.onsuyum.security.domain.model.Role;
+import com.onsuyum.security.domain.model.User;
+import com.onsuyum.security.domain.repository.UserRepository;
+import com.onsuyum.storage.domain.repository.ImageFileRepository;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.apache.tomcat.util.json.JSONParser;
 import org.apache.tomcat.util.json.ParseException;
@@ -16,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +43,12 @@ public class DummyDataTests {
 
     @Autowired
     private RestaurantCategoryService restaurantCategoryService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ImageFileRepository imageFileRepository;
 
     @Value("${dummy-data-json-path}")
     private String dummyDataJsonPath;
@@ -66,11 +77,11 @@ public class DummyDataTests {
 
             RestaurantRequest restaurantRequest = toRestaurantRequest(map);
             Set<String> categoryNames = new HashSet<>((List<String>) map.get("category"));
-            List<MenuRequest> menuRequestList = toMenuRequestList((List<Map<String, Object>>) map.get("menu"));
+            List<MultipartMenuRequest> multipartMenuRequestList = toMenuRequestList((List<Map<String, Object>>) map.get("menu"));
 
             RestaurantResponse restaurantResponse = restaurantService.save(restaurantRequest, false);
             Map<String, Object> responseMap = restaurantCategoryService.saveAllRestaurantCategory(restaurantResponse.getId(), categoryNames);
-            List<MenuResponse> menuResponses = menuService.saveAll(restaurantResponse.getId(), menuRequestList);
+            List<MenuResponse> menuResponses = menuService.saveAll(restaurantResponse.getId(), multipartMenuRequestList);
         }
 
         clearDummyDataImageFiles();
@@ -138,9 +149,9 @@ public class DummyDataTests {
 
     }
 
-    private List<MenuRequest> toMenuRequestList(List<Map<String, Object>> maps) {
+    private List<MultipartMenuRequest> toMenuRequestList(List<Map<String, Object>> maps) {
         return maps.stream()
-                .map(map -> MenuRequest.builder()
+                .map(map -> MultipartMenuRequest.builder()
                         .name((String) map.get("name"))
                         .price(convertInteger((String) map.get("price")))
                         .menuImage(toMultipartFileByFile(toFileFromUrl((String) map.get("menuImg"))))
@@ -184,4 +195,43 @@ public class DummyDataTests {
     private boolean isAltImage(BufferedImage image, String extension) {
         return extension.equals("png") && bufferedImagesEqual(bufferedAltImage, image);
     }
+
+    @Test
+    public void addUser() {
+        User user = User.builder()
+                .username("admin")
+                .password(new BCryptPasswordEncoder().encode("admin"))
+                .build();
+
+        user.addRole(Role.ROLE_USER, Role.ROLE_ADMIN);
+
+        userRepository.save(user);
+    }
+
+//    @Test
+//    public void insertS3Url() throws URISyntaxException {
+//        String url = "https://s3.ap-northeast-2.amazonaws.com/onsuyum.bucket/";
+//        List<ImageFile> imageFiles = (List<ImageFile>) imageFileRepository.findAll();
+//
+//        for (ImageFile imageFile : imageFiles) {
+//            String convertedFileName = imageFile.getConvertedName().replace(' ', '+');
+//            imageFile.setS3Url(url + convertedFileName);
+//            imageFileRepository.save(imageFile);
+//        }
+//    }
+//
+//    @Test
+//    public void moveFiles() {
+//        String oldDirectory = "/Users/hanhyunsoo/dev/keypair/upload/";
+//        String newDirectory = "/Users/hanhyunsoo/dev/keypair/upload2/";
+//
+//        List<ImageFile> imageFiles = (List<ImageFile>) imageFileRepository.findAll();
+//
+//        for (ImageFile imageFile : imageFiles) {
+//            String convertedFileName = imageFile.getConvertedName();
+//
+//            File oldFile = new File(oldDirectory + convertedFileName);
+//            oldFile.renameTo(new File(newDirectory + convertedFileName));
+//        }
+//    }
 }

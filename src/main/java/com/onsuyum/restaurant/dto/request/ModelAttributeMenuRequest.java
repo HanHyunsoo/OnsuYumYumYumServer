@@ -9,14 +9,14 @@ import java.util.List;
 
 @Getter
 @Setter
-@Schema(description = "메뉴 Request Form")
-public class MenuRequestForm {
+@Schema(description = "ModelAttribute 전용 Menu Requests")
+public class ModelAttributeMenuRequest {
     //    @ArraySchema(schema = @Schema(implementation = MenuRequest.class))
-    @Schema(description = "ㅎㅇ", anyOf = MenuRequest.class)
-    private List<MenuRequest> menuRequestList;
+    @Schema(description = "메뉴 Request List", anyOf = MultipartMenuRequest.class)
+    private List<MultipartMenuRequest> menuRequestList;
 
     @Builder
-    public MenuRequestForm(List<MenuRequest> menuRequestList) {
+    public ModelAttributeMenuRequest(List<MultipartMenuRequest> menuRequestList) {
         this.menuRequestList = menuRequestList;
     }
 }
