@@ -18,7 +18,10 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Configuration
 @EnableWebMvc
@@ -83,13 +86,41 @@ public class SwaggerConfig {
                 .consumes(getConsumeContentTypes())
                 .produces(getProduceContentTypes())
                 .apiInfo(swaggerInfo()).select()
-                .apis(RequestHandlerSelectors.basePackage("com.onsuyum.security").or(RequestHandlerSelectors.basePackage("com.onsuyum.admin")))
+                .apis(RequestHandlerSelectors.basePackage("com.onsuyum.security"))
                 .paths(PathSelectors.any())
                 .build()
                 .useDefaultResponseMessages(false)
                 .tags(
-                        new Tag("Auth API", "인증, 인가에 대한 API"),
-                        new Tag("Admin Menu API", "어드민 메뉴 API")
+                        new Tag("Auth API", "인증, 인가에 대한 API")
+                );
+    }
+
+    @Bean
+    public Docket AdminApi(TypeResolver typeResolver) {
+        return new Docket(DocumentationType.OAS_30)
+                .groupName("Admin API")
+                .securityContexts(Collections.singletonList(securityContext()))
+                .securitySchemes(Collections.singletonList(accessToken()))
+                .alternateTypeRules(
+                        AlternateTypeRules.newRule(
+                                typeResolver.resolve(Pageable.class),
+                                typeResolver.resolve(CustomPageable.class)
+                        )
+                )
+                .additionalModels(
+                        typeResolver.resolve(SuccessResponseBody.class),
+                        typeResolver.resolve(FailureResponseBody.class)
+                )
+                .consumes(getConsumeContentTypes())
+                .produces(getProduceContentTypes())
+                .apiInfo(swaggerInfo()).select()
+                .apis(RequestHandlerSelectors.basePackage("com.onsuyum.admin"))
+                .paths(PathSelectors.any())
+                .build()
+                .useDefaultResponseMessages(false)
+                .tags(
+                        new Tag("Admin Menu API", "어드민 메뉴 API"),
+                        new Tag("Admin Restaurant API", "어드민 음식점 API")
                 );
     }
 
