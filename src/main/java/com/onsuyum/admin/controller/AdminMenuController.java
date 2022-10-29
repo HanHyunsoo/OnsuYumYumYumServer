@@ -77,7 +77,7 @@ public class AdminMenuController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(path = "/menus/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/menus/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "해당 ID 메뉴 이미지 저장",
             description = "해당 ID 메뉴의 이미지를 저장합니다. 이미 그 메뉴에 이미지가 존재한다면 저장 할 수 없습니다.\n" +
@@ -159,7 +159,7 @@ public class AdminMenuController {
         return SuccessResponseBody.toEmptyResponseEntity(StatusEnum.SUCCESS_DELETE_MENU);
     }
 
-    @DeleteMapping(path = "/menus/{id}/images", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = "/menus/{id}/image", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "해당 ID 메뉴의 이미지 삭제",
             description = "메뉴 ID로 해당 메뉴의 이미지를 삭제합니다.",
