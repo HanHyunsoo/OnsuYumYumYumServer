@@ -4,7 +4,7 @@ import com.onsuyum.common.StatusEnum;
 import com.onsuyum.common.response.FailureResponseBody;
 import com.onsuyum.common.response.SuccessResponseBody;
 import com.onsuyum.restaurant.domain.service.RestaurantService;
-import com.onsuyum.restaurant.dto.request.RestaurantRequest;
+import com.onsuyum.restaurant.dto.request.MultipartRestaurantRequest;
 import com.onsuyum.restaurant.dto.response.RestaurantResponse;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,7 +38,7 @@ public class RestaurantController {
                     @ApiResponse(responseCode = "201", description = "음식점 저장 성공")
             }
     )
-    public ResponseEntity<SuccessResponseBody<RestaurantResponse>> saveRestaurantWithRequest(@ModelAttribute RestaurantRequest dto) {
+    public ResponseEntity<SuccessResponseBody<RestaurantResponse>> saveRestaurantWithRequest(@ModelAttribute MultipartRestaurantRequest dto) {
         RestaurantResponse restaurantResponse = restaurantService.save(dto, true);
 
         return SuccessResponseBody

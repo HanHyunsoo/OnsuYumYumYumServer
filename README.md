@@ -23,8 +23,6 @@
 <img src="https://img.shields.io/badge/Amazon%20RDS-527FFF?style=flat&logo=AmazonRDS&logoColor=white">
 <img src="https://img.shields.io/badge/Amazon%20S3-569A31?style=flat&logo=AmazonS3&logoColor=white">
 
-## Flowchart
-
 ## Database ERD
 ![ERD](diagram.png)
 
@@ -38,3 +36,7 @@
 
 ## License
 OnsuYumYumYum Server는 MIT License를 적용했습니다.
+
+## Open Source
+
+* [https://github.com/tsparticles/404-templates](https://github.com/tsparticles/404-templates)

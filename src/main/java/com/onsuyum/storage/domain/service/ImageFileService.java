@@ -28,8 +28,8 @@ public class ImageFileService {
     public ImageFile save(MultipartFile file) {
         String newFileName = createRandomFileName(file.getOriginalFilename());
         // TODO S3 용량 때문에 잠깐 막아둠, 실서비스를 사용할 때는 주석 제거하기
-//        String s3Url = s3StorageService.upload(file, newFileName);
-        String s3Url = "";
+        String s3Url = s3StorageService.upload(file, newFileName);
+//        String s3Url = "";
         localStorageService.upload(file, newFileName);
 
         ImageFile imageFile = ImageFile.builder()

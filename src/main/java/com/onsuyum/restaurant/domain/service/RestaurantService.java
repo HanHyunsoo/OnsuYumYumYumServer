@@ -5,7 +5,8 @@ import com.onsuyum.common.exception.RestaurantNotFoundException;
 import com.onsuyum.common.exception.RestaurantTimeNotValidException;
 import com.onsuyum.restaurant.domain.model.Restaurant;
 import com.onsuyum.restaurant.domain.repository.RestaurantRepository;
-import com.onsuyum.restaurant.dto.request.RestaurantRequest;
+import com.onsuyum.restaurant.dto.request.JsonRestaurantRequest;
+import com.onsuyum.restaurant.dto.request.MultipartRestaurantRequest;
 import com.onsuyum.restaurant.dto.response.RestaurantResponse;
 import com.onsuyum.storage.domain.model.ImageFile;
 import com.onsuyum.storage.domain.service.ImageFileService;
@@ -26,7 +27,7 @@ public class RestaurantService {
     private final ImageFileService imageFileService;
 
     @Transactional
-    public RestaurantResponse save(RestaurantRequest dto, boolean isRequest) {
+    public RestaurantResponse save(MultipartRestaurantRequest dto, boolean isRequest) {
         ImageFile outsideImage = null, insideImage = null;
 
         if (dto.getOutsideImage() != null) {
@@ -96,20 +97,8 @@ public class RestaurantService {
     }
 
     @Transactional
-    public RestaurantResponse update(Long id, RestaurantRequest dto) {
+    public RestaurantResponse update(Long id, JsonRestaurantRequest dto) {
         Restaurant restaurant = findEntityById(id);
-        ImageFile outsideImage = restaurant.getOutsideImage();
-        ImageFile insideImage = restaurant.getInsideImage();
-
-        if (dto.getOutsideImage() != null) {
-            imageFileService.delete(outsideImage.getId());
-            outsideImage = imageFileService.save(dto.getOutsideImage());
-        }
-
-        if (dto.getInsideImage() != null) {
-            imageFileService.delete(insideImage.getId());
-            insideImage = imageFileService.save(dto.getInsideImage());
-        }
 
         restaurant.update(
                 restaurant.isRequest(),
@@ -119,9 +108,7 @@ public class RestaurantService {
                 dto.getSummary(),
                 dto.getLocation(),
                 dto.getLongitude(),
-                dto.getLatitude(),
-                outsideImage,
-                insideImage
+                dto.getLatitude()
         );
 
         restaurant = restaurantRepository.save(restaurant);
