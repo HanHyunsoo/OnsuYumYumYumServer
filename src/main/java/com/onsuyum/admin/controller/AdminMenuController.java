@@ -89,8 +89,8 @@ public class AdminMenuController {
             }
     )
     public ResponseEntity<SuccessResponseBody<MenuResponse>> saveMenuImageById(@PathVariable @Parameter(description = "메뉴 Id") Long id,
-                                                                                     @Parameter(description = "저장할 메뉴 이미지") @RequestPart MultipartFile imageFile) {
-        MenuResponse menuResponse = menuService.saveMenuImageById(id, imageFile);
+                                                                               @Parameter(description = "저장할 메뉴 이미지") @RequestPart MultipartFile image) {
+        MenuResponse menuResponse = menuService.saveMenuImageById(id, image);
 
         return SuccessResponseBody
                 .toResponseEntity(
@@ -165,7 +165,7 @@ public class AdminMenuController {
             description = "메뉴 ID로 해당 메뉴의 이미지를 삭제합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "메뉴 이미지 삭제 성공"),
-                    @ApiResponse(responseCode = "404", description = "해당 ID의 이미지는 존재하지 않음", content = @Content(schema = @Schema(implementation = FailureResponseBody.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
+                    @ApiResponse(responseCode = "404", description = "해당 ID의 메뉴가 존재하지 않음 or 해당 ID의 메뉴 이미지는 존재하지 않음", content = @Content(schema = @Schema(implementation = FailureResponseBody.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
             }
 
     )
