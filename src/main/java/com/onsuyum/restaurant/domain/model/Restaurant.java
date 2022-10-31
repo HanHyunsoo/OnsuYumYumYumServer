@@ -84,8 +84,8 @@ public class Restaurant extends BaseTimeEntity {
         this.insideImage = insideImage;
     }
 
-    public void changeIsRequest() {
-        this.isRequest = !isRequest;
+    public void updateIsRequest(boolean isRequest) {
+        this.isRequest = isRequest;
     }
 
     @Builder
