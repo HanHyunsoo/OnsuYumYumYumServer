@@ -1,8 +1,6 @@
 package com.onsuyum.restaurant.domain.service;
 
-import com.onsuyum.common.exception.ForbiddenRestaurantException;
-import com.onsuyum.common.exception.RestaurantNotFoundException;
-import com.onsuyum.common.exception.RestaurantTimeNotValidException;
+import com.onsuyum.common.exception.*;
 import com.onsuyum.restaurant.domain.model.Restaurant;
 import com.onsuyum.restaurant.domain.repository.RestaurantRepository;
 import com.onsuyum.restaurant.dto.request.JsonRestaurantRequest;
@@ -15,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -57,6 +56,34 @@ public class RestaurantService {
         return restaurant.toResponseDTO();
     }
 
+    @Transactional
+    public RestaurantResponse saveOutsideImage(Long id, MultipartFile multipartFile) {
+        Restaurant restaurant = findEntityById(id);
+
+        if (restaurant.getOutsideImage() != null) {
+            throw new RestaurantOutsideImageAlreadyExistsException();
+        }
+
+        ImageFile imageFile = imageFileService.save(multipartFile);
+        restaurant.updateOutsideImage(imageFile);
+
+        return restaurantRepository.save(restaurant).toResponseDTO();
+    }
+
+    @Transactional
+    public RestaurantResponse saveInsideImage(Long id, MultipartFile multipartFile) {
+        Restaurant restaurant = findEntityById(id);
+
+        if (restaurant.getInsideImage() != null) {
+            throw new RestaurantInsideImageAlreadyExistsException();
+        }
+
+        ImageFile imageFile = imageFileService.save(multipartFile);
+        restaurant.updateInsideImage(imageFile);
+
+        return restaurantRepository.save(restaurant).toResponseDTO();
+    }
+
     @Transactional(readOnly = true)
     public RestaurantResponse findById(Long id) {
         Restaurant restaurant = findEntityById(id);
@@ -97,11 +124,15 @@ public class RestaurantService {
     }
 
     @Transactional
-    public RestaurantResponse update(Long id, JsonRestaurantRequest dto) {
+    public RestaurantResponse update(Long id, JsonRestaurantRequest dto, Boolean isRequest) {
         Restaurant restaurant = findEntityById(id);
 
+        if (isRequest == null) {
+            isRequest = restaurant.isRequest();
+        }
+
         restaurant.update(
-                restaurant.isRequest(),
+                isRequest,
                 dto.getName(),
                 dto.getPhone(),
                 dto.getTime(),
@@ -117,19 +148,35 @@ public class RestaurantService {
     }
 
     @Transactional
-    public RestaurantResponse changeIsRequest(Long id) {
-        Restaurant restaurant = findEntityById(id);
-        restaurant.changeIsRequest();
-
-        restaurant = restaurantRepository.save(restaurant);
-
-        return restaurant.toResponseDTO();
-    }
-
-    @Transactional
     public void deleteById(Long id) {
         Restaurant restaurant = findEntityById(id);
         restaurantRepository.delete(restaurant);
+    }
+
+    @Transactional
+    public void deleteOutsideImageById(Long id) {
+        Restaurant restaurant = findEntityById(id);
+        ImageFile outsideImage = restaurant.getOutsideImage();
+
+        if (outsideImage == null) {
+            throw new RestaurantOutsideImageNotFoundException();
+        }
+
+        imageFileService.delete(outsideImage.getId());
+        restaurant.updateOutsideImage(null);
+    }
+
+    @Transactional
+    public void deleteInsideImageById(Long id) {
+        Restaurant restaurant = findEntityById(id);
+        ImageFile insideImage = restaurant.getInsideImage();
+
+        if (insideImage == null) {
+            throw new RestaurantInsideImageNotFoundException();
+        }
+
+        imageFileService.delete(insideImage.getId());
+        restaurant.updateInsideImage(null);
     }
 
     // Service Layer 내에서 사용 가능한 메서드
