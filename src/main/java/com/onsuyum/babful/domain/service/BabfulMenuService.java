@@ -6,13 +6,12 @@ import com.onsuyum.babful.dto.request.BabfulMenuRequest;
 import com.onsuyum.babful.dto.response.BabfulMenuResponse;
 import com.onsuyum.common.exception.BabfulMenuDateAlreadyExistsException;
 import com.onsuyum.common.exception.BabfulMenuNotFoundException;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -25,10 +24,10 @@ public class BabfulMenuService {
         validMenuDate(request.getMenuDate());
 
         BabfulMenu babfulMenu = BabfulMenu.builder()
-                .menuDate(request.getMenuDate())
-                .foods(request.getFoods())
-                .deliciousFood(request.getDeliciousFood())
-                .build();
+                                          .menuDate(request.getMenuDate())
+                                          .foods(request.getFoods())
+                                          .deliciousFood(request.getDeliciousFood())
+                                          .build();
 
         return babfulMenu.toResponseDTO();
     }
@@ -41,7 +40,8 @@ public class BabfulMenuService {
         if (isOldData) {
             babfulMenuPage = babfulMenuRepository.findAllByMenuDateLessThan(pageable, nowDate);
         } else {
-            babfulMenuPage = babfulMenuRepository.findAllByMenuDateGreaterThanEqual(pageable, nowDate);
+            babfulMenuPage = babfulMenuRepository.findAllByMenuDateGreaterThanEqual(pageable,
+                    nowDate);
         }
 
         return babfulMenuPage.map(BabfulMenu::toResponseDTO);
@@ -53,7 +53,8 @@ public class BabfulMenuService {
 
         babfulMenu.update(request.getMenuDate(), request.getFoods(), request.getDeliciousFood());
 
-        return babfulMenuRepository.save(babfulMenu).toResponseDTO();
+        return babfulMenuRepository.save(babfulMenu)
+                                   .toResponseDTO();
     }
 
     @Transactional
@@ -65,7 +66,7 @@ public class BabfulMenuService {
     @Transactional(readOnly = true)
     BabfulMenu findEntityById(Long id) {
         return babfulMenuRepository.findById(id)
-                .orElseThrow(BabfulMenuNotFoundException::new);
+                                   .orElseThrow(BabfulMenuNotFoundException::new);
     }
 
     private void validMenuDate(LocalDate date) {

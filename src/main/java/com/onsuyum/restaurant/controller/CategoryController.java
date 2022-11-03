@@ -61,7 +61,8 @@ public class CategoryController {
                     @ApiResponse(responseCode = "404", description = "카테고리 존재하지 않음", content = @Content(schema = @Schema(implementation = FailureResponseBody.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
             }
     )
-    public ResponseEntity<SuccessResponseBody<CategoryResponse>> findById(@PathVariable @Parameter(description = "카테고리 ID") Long id) {
+    public ResponseEntity<SuccessResponseBody<CategoryResponse>> findById(
+            @PathVariable @Parameter(description = "카테고리 ID") Long id) {
         CategoryResponse categoryResponse = categoryService.findById(id);
 
         return SuccessResponseBody

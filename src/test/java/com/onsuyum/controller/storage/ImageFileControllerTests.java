@@ -1,5 +1,10 @@
 package com.onsuyum.controller.storage;
 
+import static org.mockito.BDDMockito.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+
 import com.onsuyum.storage.controller.ImageFileController;
 import com.onsuyum.storage.domain.service.ImageFileService;
 import org.junit.jupiter.api.DisplayName;
@@ -12,11 +17,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
-import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @WebMvcTest(ImageFileController.class)
 public class ImageFileControllerTests {

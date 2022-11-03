@@ -1,14 +1,14 @@
 package com.onsuyum.storage.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Schema(description = "Image File Response")
 public class ImageFileResponse {
+
     @Schema(description = "이미지 파일 ID", example = "1")
     private final Long id;
     @Schema(description = "업로드 당시 원래 이름", example = "안녕.jpg")
@@ -23,7 +23,8 @@ public class ImageFileResponse {
     private final LocalDateTime modifiedDate;
 
     @Builder
-    public ImageFileResponse(Long id, String originalName, String convertedName, String s3Url, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public ImageFileResponse(Long id, String originalName, String convertedName, String s3Url,
+            LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.originalName = originalName;
         this.convertedName = convertedName;

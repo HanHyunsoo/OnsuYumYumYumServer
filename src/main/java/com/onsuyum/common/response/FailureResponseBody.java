@@ -18,11 +18,13 @@ public class FailureResponseBody extends AbstractResponseBody {
         return ResponseEntity
                 .status(statusEnum.getHttpStatus())
                 .body(FailureResponseBody.builder()
-                        .status(statusEnum.getHttpStatus().value())
-                        .statusDetail(statusEnum.getHttpStatus().name())
-                        .code(statusEnum.name())
-                        .message(statusEnum.getDetail())
-                        .build()
+                                         .status(statusEnum.getHttpStatus()
+                                                           .value())
+                                         .statusDetail(statusEnum.getHttpStatus()
+                                                                 .name())
+                                         .code(statusEnum.name())
+                                         .message(statusEnum.getDetail())
+                                         .build()
                 );
     }
 }

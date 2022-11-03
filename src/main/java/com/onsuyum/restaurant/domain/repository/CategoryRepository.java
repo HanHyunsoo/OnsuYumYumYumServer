@@ -1,14 +1,14 @@
 package com.onsuyum.restaurant.domain.repository;
 
 import com.onsuyum.restaurant.domain.model.Category;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import java.util.Optional;
-
 public interface CategoryRepository extends PagingAndSortingRepository<Category, Long> {
+
     Optional<Category> findByName(String name);
 
     @Query(

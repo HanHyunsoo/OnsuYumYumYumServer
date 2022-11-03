@@ -4,6 +4,7 @@ import com.onsuyum.common.exception.ImageNotFoundException;
 import com.onsuyum.common.exception.LocalFileNotFoundException;
 import com.onsuyum.storage.domain.model.ImageFile;
 import com.onsuyum.storage.domain.repository.ImageFileRepository;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -12,17 +13,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class ImageFileService {
 
-    @Value("${spring.servlet.multipart.location}")
-    private String localFilePath;
     private final ImageFileRepository imageFileRepository;
     private final S3StorageService s3StorageService;
     private final LocalStorageService localStorageService;
+    @Value("${spring.servlet.multipart.location}")
+    private String localFilePath;
 
     @Transactional
     public ImageFile save(MultipartFile file) {
@@ -33,19 +32,21 @@ public class ImageFileService {
         localStorageService.upload(file, newFileName);
 
         ImageFile imageFile = ImageFile.builder()
-                .originalName(file.getOriginalFilename())
-                .convertedName(newFileName)
-                .s3Url(s3Url)
-                .build();
+                                       .originalName(file.getOriginalFilename())
+                                       .convertedName(newFileName)
+                                       .s3Url(s3Url)
+                                       .build();
 
         return imageFileRepository.save(imageFile);
     }
 
     @Transactional(readOnly = true)
     public Resource getResourceById(Long id) {
-        ImageFile imageFile = imageFileRepository.findById(id).orElseThrow(ImageNotFoundException::new);
+        ImageFile imageFile = imageFileRepository.findById(id)
+                                                 .orElseThrow(ImageNotFoundException::new);
 
-        Resource resource = new FileSystemResource(localFilePath + "/" + imageFile.getConvertedName());
+        Resource resource = new FileSystemResource(
+                localFilePath + "/" + imageFile.getConvertedName());
         if (!resource.exists()) {
             throw new LocalFileNotFoundException();
         }
@@ -55,7 +56,8 @@ public class ImageFileService {
 
     @Transactional
     public void delete(Long id) {
-        ImageFile imageFile = imageFileRepository.findById(id).orElseThrow(ImageNotFoundException::new);
+        ImageFile imageFile = imageFileRepository.findById(id)
+                                                 .orElseThrow(ImageNotFoundException::new);
 
         s3StorageService.delete(imageFile.getConvertedName());
         localStorageService.delete(imageFile.getConvertedName());

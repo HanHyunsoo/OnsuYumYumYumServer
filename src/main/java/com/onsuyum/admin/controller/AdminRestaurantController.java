@@ -19,7 +19,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -42,9 +53,9 @@ public class AdminRestaurantController {
     )
     public ResponseEntity<SuccessResponseBody<RestaurantResponse>> save(
             @Parameter(description = "음식점 제안 여부") @RequestParam(defaultValue = "false", required = false) boolean isRequest,
-            @Parameter(description = "음식점 request", schema = @Schema(type = "object")) @ModelAttribute MultipartRestaurantRequest multipartRestaurantRequest
-    ) {
-        RestaurantResponse restaurantResponse = restaurantService.save(multipartRestaurantRequest, isRequest);
+            @Parameter(description = "음식점 request", schema = @Schema(type = "object")) @ModelAttribute MultipartRestaurantRequest multipartRestaurantRequest) {
+        RestaurantResponse restaurantResponse = restaurantService.save(multipartRestaurantRequest,
+                isRequest);
 
         return SuccessResponseBody
                 .toResponseEntity(
@@ -66,8 +77,7 @@ public class AdminRestaurantController {
     )
     public ResponseEntity<SuccessResponseBody<RestaurantResponse>> saveOutsideImage(
             @Parameter(description = "음식점 id") @PathVariable Long id,
-            @Parameter(description = "새로 부여할 외부 이미지 파일") @RequestPart MultipartFile image
-    ) {
+            @Parameter(description = "새로 부여할 외부 이미지 파일") @RequestPart MultipartFile image) {
         RestaurantResponse restaurantResponse = restaurantService.saveOutsideImage(id, image);
 
         return SuccessResponseBody
@@ -90,8 +100,7 @@ public class AdminRestaurantController {
     )
     public ResponseEntity<SuccessResponseBody<RestaurantResponse>> saveInsideImage(
             @Parameter(description = "음식점 id") @PathVariable Long id,
-            @Parameter(description = "새로 부여할 내부 이미지 파일") @RequestPart MultipartFile image
-    ) {
+            @Parameter(description = "새로 부여할 내부 이미지 파일") @RequestPart MultipartFile image) {
         RestaurantResponse restaurantResponse = restaurantService.saveInsideImage(id, image);
 
         return SuccessResponseBody
@@ -115,8 +124,7 @@ public class AdminRestaurantController {
     public ResponseEntity<SuccessResponseBody<Page<RestaurantResponse>>> findAll(
             @Parameter(description = "pageable") Pageable pageable,
             @Parameter(description = "음식점 제안 여부") @RequestParam(defaultValue = "false", required = false) boolean isRequest,
-            @Parameter(description = "음식점의 이름 키워드") @RequestParam(name = "keyword", defaultValue = "", required = false) String name
-            ) {
+            @Parameter(description = "음식점의 이름 키워드") @RequestParam(name = "keyword", defaultValue = "", required = false) String name) {
         Page<RestaurantResponse> page;
         if (name.isBlank()) {
             page = restaurantService.findAllByRequest(pageable, isRequest);
@@ -141,8 +149,7 @@ public class AdminRestaurantController {
             }
     )
     public ResponseEntity<SuccessResponseBody<RestaurantResponse>> findById(
-            @Parameter(description = "음식점 ID") @PathVariable Long id
-    ) {
+            @Parameter(description = "음식점 ID") @PathVariable Long id) {
         RestaurantResponse restaurantResponse = restaurantService.findById(id);
 
         return SuccessResponseBody
@@ -163,10 +170,10 @@ public class AdminRestaurantController {
     )
     public ResponseEntity<SuccessResponseBody<RestaurantResponse>> updateById(
             @Parameter(description = "음식점 ID") @PathVariable Long id,
-            @RequestBody AdminJsonRestaurantRequest request
-    ) {
+            @RequestBody AdminJsonRestaurantRequest request) {
 
-        RestaurantResponse restaurantResponse = restaurantService.update(id, request, request.isRequest());
+        RestaurantResponse restaurantResponse = restaurantService.update(id, request,
+                request.isRequest());
 
         return SuccessResponseBody
                 .toResponseEntity(
@@ -184,7 +191,8 @@ public class AdminRestaurantController {
                     @ApiResponse(responseCode = "404", description = "음식점 존재하지 않음", content = @Content(schema = @Schema(implementation = FailureResponseBody.class)))
             }
     )
-    public ResponseEntity<SuccessResponseBody<Void>> deleteById(@Parameter(description = "음식점 ID") @PathVariable Long id) {
+    public ResponseEntity<SuccessResponseBody<Void>> deleteById(
+            @Parameter(description = "음식점 ID") @PathVariable Long id) {
         restaurantService.deleteById(id);
 
         return SuccessResponseBody
@@ -204,10 +212,12 @@ public class AdminRestaurantController {
             }
 
     )
-    public ResponseEntity<SuccessResponseBody<Void>> deleteOutsideImageById(@Parameter(description = "음식점 ID") @PathVariable Long id) {
+    public ResponseEntity<SuccessResponseBody<Void>> deleteOutsideImageById(
+            @Parameter(description = "음식점 ID") @PathVariable Long id) {
         restaurantService.deleteOutsideImageById(id);
 
-        return SuccessResponseBody.toEmptyResponseEntity(StatusEnum.SUCCESS_DELETE_RESTAURANT_OUTSIDE_IMAGE);
+        return SuccessResponseBody.toEmptyResponseEntity(
+                StatusEnum.SUCCESS_DELETE_RESTAURANT_OUTSIDE_IMAGE);
     }
 
     @DeleteMapping(path = "/restaurants/{id}/inside-image", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -220,9 +230,11 @@ public class AdminRestaurantController {
             }
 
     )
-    public ResponseEntity<SuccessResponseBody<Void>> deleteMenuImageById(@PathVariable @Parameter(description = "Menu Id") Long id) {
+    public ResponseEntity<SuccessResponseBody<Void>> deleteMenuImageById(
+            @PathVariable @Parameter(description = "Menu Id") Long id) {
         restaurantService.deleteInsideImageById(id);
 
-        return SuccessResponseBody.toEmptyResponseEntity(StatusEnum.SUCCESS_DELETE_RESTAURANT_INSIDE_IMAGE);
+        return SuccessResponseBody.toEmptyResponseEntity(
+                StatusEnum.SUCCESS_DELETE_RESTAURANT_INSIDE_IMAGE);
     }
 }

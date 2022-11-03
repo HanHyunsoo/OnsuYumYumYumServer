@@ -1,13 +1,13 @@
 package com.onsuyum.common.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-
 import java.time.LocalDateTime;
+import lombok.Getter;
 
 @Getter
 @Schema
 public abstract class AbstractResponseBody {
+
     @Schema(description = "요청 시간")
     private final LocalDateTime timestamp;
     @Schema(description = "HTTP status")

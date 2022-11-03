@@ -18,7 +18,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,13 +39,16 @@ public class RestaurantController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "음식점 저장",
-            description = "음식점 Request를 받아서 DB에 저장합니다. 익명 유저도 요청할 수 있는 대신 생성된 정보를 어드민이 승인해야 비로소 다른 유저들이 접근 할 수 있습니다.\n" +
-                    "클라이언트 쪽에서 음식점 제보하기 기능을 만든다면 메뉴들을 저장할 uri(post, /api/restaurants)를 먼저 요청해서 id를 받은 다음 카테고리(post, /api/restaurants/{id}/categories), 메뉴(post, /api/restaurants/{id}/menus)를 마저 저장하는 것을 권장합니다.",
+            description =
+                    "음식점 Request를 받아서 DB에 저장합니다. 익명 유저도 요청할 수 있는 대신 생성된 정보를 어드민이 승인해야 비로소 다른 유저들이 접근 할 수 있습니다.\n"
+                            +
+                            "클라이언트 쪽에서 음식점 제보하기 기능을 만든다면 메뉴들을 저장할 uri(post, /api/restaurants)를 먼저 요청해서 id를 받은 다음 카테고리(post, /api/restaurants/{id}/categories), 메뉴(post, /api/restaurants/{id}/menus)를 마저 저장하는 것을 권장합니다.",
             responses = {
                     @ApiResponse(responseCode = "201", description = "음식점 저장 성공")
             }
     )
-    public ResponseEntity<SuccessResponseBody<RestaurantResponse>> saveRestaurantWithRequest(@ModelAttribute MultipartRestaurantRequest dto) {
+    public ResponseEntity<SuccessResponseBody<RestaurantResponse>> saveRestaurantWithRequest(
+            @ModelAttribute MultipartRestaurantRequest dto) {
         RestaurantResponse restaurantResponse = restaurantService.save(dto, true);
 
         return SuccessResponseBody
@@ -58,13 +68,15 @@ public class RestaurantController {
                     @ApiResponse(responseCode = "204", description = "음식점들 정보 없음")
             }
     )
-    public ResponseEntity<SuccessResponseBody<Page<RestaurantResponse>>> findAllRestaurantWithNotRequest(Pageable pageable,
-                                                                                                         @RequestParam(name = "keyword", required = false) @Parameter(description = "음식점의 이름 키워드") String name) {
+    public ResponseEntity<SuccessResponseBody<Page<RestaurantResponse>>> findAllRestaurantWithNotRequest(
+            Pageable pageable,
+            @RequestParam(name = "keyword", required = false) @Parameter(description = "음식점의 이름 키워드") String name) {
         Page<RestaurantResponse> restaurantResponsePage;
         if (name == null || name.isBlank()) {
             restaurantResponsePage = restaurantService.findAllByRequest(pageable, false);
         } else {
-            restaurantResponsePage = restaurantService.findAllByNameAndRequest(pageable, name, false);
+            restaurantResponsePage = restaurantService.findAllByNameAndRequest(pageable, name,
+                    false);
         }
 
         if (restaurantResponsePage.isEmpty()) {
@@ -87,7 +99,8 @@ public class RestaurantController {
                     @ApiResponse(responseCode = "404", description = "음식점 정보 존재하지 않음", content = @Content(schema = @Schema(implementation = FailureResponseBody.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
             }
     )
-    public ResponseEntity<SuccessResponseBody<RestaurantResponse>> findRestaurantWithNotRequest(@PathVariable @Parameter(description = "음식점 ID") Long id) {
+    public ResponseEntity<SuccessResponseBody<RestaurantResponse>> findRestaurantWithNotRequest(
+            @PathVariable @Parameter(description = "음식점 ID") Long id) {
         RestaurantResponse restaurantResponse = restaurantService.findByIdWithRequest(id, true);
 
         return SuccessResponseBody
