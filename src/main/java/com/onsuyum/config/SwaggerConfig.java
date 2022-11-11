@@ -128,7 +128,8 @@ public class SwaggerConfig {
                 .useDefaultResponseMessages(false)
                 .tags(
                         new Tag("Admin Menu API", "어드민 메뉴 API"),
-                        new Tag("Admin Restaurant API", "어드민 음식점 API")
+                        new Tag("Admin Restaurant API", "어드민 음식점 API"),
+                        new Tag("Admin Babful Menu API", "어드민 밥풀 메뉴 API")
                 );
     }
 
