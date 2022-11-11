@@ -7,6 +7,9 @@ import com.onsuyum.babful.dto.response.BabfulMenuResponse;
 import com.onsuyum.common.exception.BabfulMenuDateAlreadyExistsException;
 import com.onsuyum.common.exception.BabfulMenuNotFoundException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,12 +27,42 @@ public class BabfulMenuService {
         validMenuDate(request.getMenuDate());
 
         BabfulMenu babfulMenu = BabfulMenu.builder()
-                                          .menuDate(request.getMenuDate())
-                                          .foods(request.getFoods())
-                                          .deliciousFood(request.getDeliciousFood())
-                                          .build();
+                .menuDate(request.getMenuDate())
+                .foods(request.getFoods())
+                .deliciousFood(request.getDeliciousFood())
+                .build();
+
+        babfulMenuRepository.save(babfulMenu);
 
         return babfulMenu.toResponseDTO();
+    }
+
+    @Transactional
+    public List<BabfulMenuResponse> saveAll(List<BabfulMenuRequest> requests) {
+        List<BabfulMenu> babfulMenus = new ArrayList<>();
+
+        requests.forEach(request -> {
+            validMenuDate(request.getMenuDate());
+
+            BabfulMenu babfulMenu = BabfulMenu.builder()
+                    .menuDate(request.getMenuDate())
+                    .foods(request.getFoods())
+                    .deliciousFood(request.getDeliciousFood())
+                    .build();
+
+            babfulMenus.add(babfulMenu);
+        });
+
+        babfulMenuRepository.saveAll(babfulMenus);
+
+        return babfulMenus.stream().map(BabfulMenu::toResponseDTO).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BabfulMenuResponse> findAll(Pageable pageable) {
+        Page<BabfulMenu> babfulMenuPage = babfulMenuRepository.findAll(pageable);
+
+        return babfulMenuPage.map(BabfulMenu::toResponseDTO);
     }
 
     @Transactional(readOnly = true)
@@ -47,14 +80,24 @@ public class BabfulMenuService {
         return babfulMenuPage.map(BabfulMenu::toResponseDTO);
     }
 
+    @Transactional(readOnly = true)
+    public BabfulMenuResponse findById(Long id) {
+
+        BabfulMenu babfulMenu = findEntityById(id);
+
+        return babfulMenu.toResponseDTO();
+    }
+
     @Transactional
     public BabfulMenuResponse updateById(Long id, BabfulMenuRequest request) {
+        validMenuDate(request.getMenuDate());
+
         BabfulMenu babfulMenu = findEntityById(id);
 
         babfulMenu.update(request.getMenuDate(), request.getFoods(), request.getDeliciousFood());
 
         return babfulMenuRepository.save(babfulMenu)
-                                   .toResponseDTO();
+                .toResponseDTO();
     }
 
     @Transactional
@@ -71,7 +114,7 @@ public class BabfulMenuService {
 
     private void validMenuDate(LocalDate date) {
         if (babfulMenuRepository.existsByMenuDate(date)) {
-            throw new BabfulMenuDateAlreadyExistsException();
+            throw new BabfulMenuDateAlreadyExistsException(date);
         }
     }
 }
