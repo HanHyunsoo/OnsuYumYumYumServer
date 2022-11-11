@@ -6,17 +6,16 @@ import com.onsuyum.security.dto.request.LoginRequest;
 import com.onsuyum.security.dto.response.TokenResponse;
 import com.onsuyum.security.dto.response.UserResponse;
 import com.onsuyum.security.token.JwtTokenProvider;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +27,8 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public TokenResponse login(LoginRequest loginRequest) {
-        UserDetails userDetails = customUserDetailService.loadUserByUsername(loginRequest.getUsername());
+        UserDetails userDetails = customUserDetailService.loadUserByUsername(
+                loginRequest.getUsername());
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), userDetails.getPassword())) {
             throw new LoginFailException();
@@ -37,8 +37,9 @@ public class AuthService {
         List<String> roles = toStringList(userDetails.getAuthorities());
 
         return TokenResponse.builder()
-                .accessToken(jwtTokenProvider.createToken(userDetails.getUsername(), roles))
-                .build();
+                            .accessToken(
+                                    jwtTokenProvider.createToken(userDetails.getUsername(), roles))
+                            .build();
     }
 
     @Transactional(readOnly = true)
@@ -53,7 +54,7 @@ public class AuthService {
 
     private List<String> toStringList(Collection<? extends GrantedAuthority> roles) {
         return roles.stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
     }
 }

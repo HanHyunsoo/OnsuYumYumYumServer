@@ -1,9 +1,16 @@
 package com.onsuyum.common;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-
-import static org.springframework.http.HttpStatus.*;
 
 @Getter
 public enum StatusEnum {
@@ -75,10 +82,15 @@ public enum StatusEnum {
     COULD_NOT_LOAD_IMAGE_FILE(INTERNAL_SERVER_ERROR, "이미지 파일을 읽어오는 중에 오류가 발생했습니다.");
 
     private final HttpStatus httpStatus;
-    private final String detail;
+    private String detail;
 
     StatusEnum(HttpStatus httpStatus, String detail) {
         this.httpStatus = httpStatus;
         this.detail = detail;
+    }
+
+    public StatusEnum setDetailAndReturn(String detail) {
+        this.detail = detail;
+        return this;
     }
 }

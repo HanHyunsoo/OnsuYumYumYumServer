@@ -1,6 +1,6 @@
 package com.onsuyum.config;
 
-import com.onsuyum.common.exception.*;
+import com.onsuyum.common.exception.CustomAbstractException;
 import com.onsuyum.common.response.FailureResponseBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

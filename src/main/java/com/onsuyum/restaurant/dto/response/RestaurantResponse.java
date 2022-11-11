@@ -2,15 +2,15 @@ package com.onsuyum.restaurant.dto.response;
 
 import com.onsuyum.storage.dto.response.ImageFileResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
-import lombok.Getter;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
 
 @Getter
 @Schema(description = "음식점 Response")
 public class RestaurantResponse {
+
     @Schema(description = "음식점 id", example = "1")
     private final Long id;
     @Schema(description = "이름", example = "돈내고돈먹기")
@@ -37,7 +37,9 @@ public class RestaurantResponse {
     private final LocalDateTime modifiedDate;
 
     @Builder
-    public RestaurantResponse(Long id, String name, String phone, List<String> time, String summary, String location, Double longitude, Double latitude, ImageFileResponse outsideImage, ImageFileResponse insideImage, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public RestaurantResponse(Long id, String name, String phone, List<String> time, String summary,
+            String location, Double longitude, Double latitude, ImageFileResponse outsideImage,
+            ImageFileResponse insideImage, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.phone = phone;

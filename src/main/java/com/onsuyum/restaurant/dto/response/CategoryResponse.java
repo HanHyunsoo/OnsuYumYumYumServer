@@ -1,14 +1,14 @@
 package com.onsuyum.restaurant.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Schema(description = "카테고리 Response")
 public class CategoryResponse {
+
     @Schema(description = "카테고리 ID", example = "1")
     private final Long id;
     @Schema(description = "설명", example = "가성비")
@@ -19,7 +19,8 @@ public class CategoryResponse {
     private final LocalDateTime modifiedDate;
 
     @Builder
-    public CategoryResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public CategoryResponse(Long id, String name, LocalDateTime createdDate,
+            LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.createdDate = createdDate;

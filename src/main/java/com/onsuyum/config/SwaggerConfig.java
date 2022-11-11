@@ -5,6 +5,10 @@ import com.onsuyum.common.request.CustomPageable;
 import com.onsuyum.common.response.FailureResponseBody;
 import com.onsuyum.common.response.SuccessResponseBody;
 import com.onsuyum.restaurant.dto.request.MultipartMenuRequestList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Pageable;
@@ -13,15 +17,14 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.schema.AlternateTypeRules;
-import springfox.documentation.service.*;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.ApiKey;
+import springfox.documentation.service.AuthorizationScope;
+import springfox.documentation.service.SecurityReference;
+import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Configuration
 @EnableWebMvc
@@ -53,8 +56,11 @@ public class SwaggerConfig {
                 )
                 .consumes(getConsumeContentTypes())
                 .produces(getProduceContentTypes())
-                .apiInfo(swaggerInfo()).select()
-                .apis(RequestHandlerSelectors.basePackage("com.onsuyum.restaurant").or(RequestHandlerSelectors.basePackage("com.onsuyum.storage")))
+                .apiInfo(swaggerInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.onsuyum.restaurant")
+                                             .or(RequestHandlerSelectors.basePackage(
+                                                     "com.onsuyum.storage")))
                 .paths(PathSelectors.any())
                 .build()
                 .useDefaultResponseMessages(false)
@@ -85,7 +91,8 @@ public class SwaggerConfig {
                 )
                 .consumes(getConsumeContentTypes())
                 .produces(getProduceContentTypes())
-                .apiInfo(swaggerInfo()).select()
+                .apiInfo(swaggerInfo())
+                .select()
                 .apis(RequestHandlerSelectors.basePackage("com.onsuyum.security"))
                 .paths(PathSelectors.any())
                 .build()
@@ -113,14 +120,16 @@ public class SwaggerConfig {
                 )
                 .consumes(getConsumeContentTypes())
                 .produces(getProduceContentTypes())
-                .apiInfo(swaggerInfo()).select()
+                .apiInfo(swaggerInfo())
+                .select()
                 .apis(RequestHandlerSelectors.basePackage("com.onsuyum.admin"))
                 .paths(PathSelectors.any())
                 .build()
                 .useDefaultResponseMessages(false)
                 .tags(
                         new Tag("Admin Menu API", "어드민 메뉴 API"),
-                        new Tag("Admin Restaurant API", "어드민 음식점 API")
+                        new Tag("Admin Restaurant API", "어드민 음식점 API"),
+                        new Tag("Admin Babful Menu API", "어드민 밥풀 메뉴 API")
                 );
     }
 
@@ -140,7 +149,8 @@ public class SwaggerConfig {
                 )
                 .consumes(getConsumeContentTypes())
                 .produces(getProduceContentTypes())
-                .apiInfo(swaggerInfo()).select()
+                .apiInfo(swaggerInfo())
+                .select()
                 .apis(RequestHandlerSelectors.basePackage("com.onsuyum.babful"))
                 .paths(PathSelectors.any())
                 .build()
@@ -170,11 +180,14 @@ public class SwaggerConfig {
     }
 
     private SecurityContext securityContext() {
-        return SecurityContext.builder().securityReferences(defaultAuth()).build();
+        return SecurityContext.builder()
+                              .securityReferences(defaultAuth())
+                              .build();
     }
 
     private List<SecurityReference> defaultAuth() {
-        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+        AuthorizationScope authorizationScope = new AuthorizationScope("global",
+                "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
         return List.of(new SecurityReference("Authorization", authorizationScopes));

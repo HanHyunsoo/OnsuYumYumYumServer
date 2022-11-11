@@ -1,17 +1,17 @@
 package com.onsuyum.restaurant.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @Schema(description = "음식점 Request(with application/json)")
 @SuperBuilder
 public class JsonRestaurantRequest {
+
     @Schema(description = "이름", example = "토마토", required = true)
     private String name;
     @Schema(description = "전화번호", example = "02-2060-0029")
@@ -35,7 +35,8 @@ public class JsonRestaurantRequest {
     @Schema(description = "위도", example = "1.5")
     private Double latitude;
 
-    public JsonRestaurantRequest(String name, String phone, List<String> time, String summary, String location, Double longitude, Double latitude) {
+    public JsonRestaurantRequest(String name, String phone, List<String> time, String summary,
+            String location, Double longitude, Double latitude) {
         this.name = name;
         this.phone = phone;
         this.time = time;

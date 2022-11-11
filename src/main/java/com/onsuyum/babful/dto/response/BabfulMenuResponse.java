@@ -1,16 +1,16 @@
 package com.onsuyum.babful.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
-import lombok.Getter;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
 
 @Getter
 @Schema(description = "밥풀 식단 Response")
 public class BabfulMenuResponse {
+
     @Schema(description = "밥풀 식단 id")
     private final Long id;
     @Schema(description = "밥풀 식단 날짜")
@@ -25,7 +25,8 @@ public class BabfulMenuResponse {
     private final LocalDateTime modifiedDate;
 
     @Builder
-    public BabfulMenuResponse(Long id, LocalDate menuDate, List<String> foods, String deliciousFood, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public BabfulMenuResponse(Long id, LocalDate menuDate, List<String> foods, String deliciousFood,
+            LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.menuDate = menuDate;
         this.foods = foods;

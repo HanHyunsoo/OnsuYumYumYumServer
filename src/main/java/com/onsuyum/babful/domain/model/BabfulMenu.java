@@ -3,15 +3,20 @@ package com.onsuyum.babful.domain.model;
 import com.onsuyum.babful.dto.response.BabfulMenuResponse;
 import com.onsuyum.common.domain.BaseTimeEntity;
 import com.onsuyum.common.util.StringListConverter;
+import java.time.LocalDate;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
-
-import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Entity
@@ -50,12 +55,12 @@ public class BabfulMenu extends BaseTimeEntity {
 
     public BabfulMenuResponse toResponseDTO() {
         return BabfulMenuResponse.builder()
-                .id(id)
-                .menuDate(menuDate)
-                .foods(foods)
-                .deliciousFood(deliciousFood)
-                .createdDate(createdDate)
-                .modifiedDate(modifiedDate)
-                .build();
+                                 .id(id)
+                                 .menuDate(menuDate)
+                                 .foods(foods)
+                                 .deliciousFood(deliciousFood)
+                                 .createdDate(createdDate)
+                                 .modifiedDate(modifiedDate)
+                                 .build();
     }
 }
