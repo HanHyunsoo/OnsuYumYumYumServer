@@ -82,10 +82,15 @@ public enum StatusEnum {
     COULD_NOT_LOAD_IMAGE_FILE(INTERNAL_SERVER_ERROR, "이미지 파일을 읽어오는 중에 오류가 발생했습니다.");
 
     private final HttpStatus httpStatus;
-    private final String detail;
+    private String detail;
 
     StatusEnum(HttpStatus httpStatus, String detail) {
         this.httpStatus = httpStatus;
         this.detail = detail;
+    }
+
+    public StatusEnum setDetailAndReturn(String detail) {
+        this.detail = detail;
+        return this;
     }
 }
