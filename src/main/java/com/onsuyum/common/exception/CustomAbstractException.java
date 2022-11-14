@@ -7,5 +7,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public abstract class CustomAbstractException extends RuntimeException {
+
     protected final StatusEnum statusEnum;
 }

@@ -1,13 +1,12 @@
 package com.onsuyum.restaurant.domain.repository;
 
 import com.onsuyum.restaurant.domain.model.Restaurant;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
-
-import java.util.Optional;
 
 public interface RestaurantRepository extends PagingAndSortingRepository<Restaurant, Long> {
     // TODO JPQL을 쓰는 메서드가 많다.. 나중에 QueryDsl을 이용해서 리팩토링 해야할듯.
@@ -31,7 +30,8 @@ public interface RestaurantRepository extends PagingAndSortingRepository<Restaur
                     "group by r " +
                     "order by count(rc) desc "
     )
-    Page<Restaurant> findAllByRequestWithCategoryCount(Pageable pageable, @Param("isRequest") boolean isRequest);
+    Page<Restaurant> findAllByRequestWithCategoryCount(Pageable pageable,
+            @Param("isRequest") boolean isRequest);
 
     // TODO random으로 뽑기 쿼리 추가
     @Query(

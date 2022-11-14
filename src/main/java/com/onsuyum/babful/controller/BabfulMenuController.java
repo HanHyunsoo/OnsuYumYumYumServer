@@ -31,8 +31,10 @@ public class BabfulMenuController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "밥풀 식단 메뉴들 조회",
-            description = "밥풀 식단 메뉴들을 조회합니다. 기본적으로 parameter isOldMenu의 default는 0이며 오늘을 포함한 다음날부터의 식단을 보여줍니다.\n" +
-                    "isOldMenu가 1이면 과거 식단을 불러옵니다.",
+            description =
+                    "밥풀 식단 메뉴들을 조회합니다. 기본적으로 parameter isOldMenu의 default는 0이며 오늘을 포함한 다음날부터의 식단을 보여줍니다.\n"
+                            +
+                            "isOldMenu가 1이면 과거 식단을 불러옵니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "밥풀 식단 메뉴들 조회 성공"),
                     @ApiResponse(responseCode = "204", description = "밥풀 식단 메뉴들 없음")

@@ -2,6 +2,19 @@ package com.onsuyum.security.domain.model;
 
 
 import com.onsuyum.security.dto.response.UserResponse;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,13 +22,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Entity
@@ -37,11 +43,18 @@ public class User implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Role> roles = new ArrayList<>();
 
+    @Builder
+    public User(Long id, String username, String password) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(x -> new SimpleGrantedAuthority(x.name()))
-                .collect(Collectors.toList());
+                    .map(x -> new SimpleGrantedAuthority(x.name()))
+                    .collect(Collectors.toList());
     }
 
     @Override
@@ -69,24 +82,19 @@ public class User implements UserDetails {
         return false;
     }
 
-    public void addRole(Role...role) {
-        Arrays.stream(role).forEach(x -> getRoles().add(x));
-    }
-
-    @Builder
-    public User(Long id, String username, String password) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
+    public void addRole(Role... role) {
+        Arrays.stream(role)
+              .forEach(x -> getRoles().add(x));
     }
 
     public UserResponse toResponseDTO() {
         return UserResponse.builder()
-                .username(username)
-                .roles(
-                        roles.stream()
-                                .map(Enum::name)
-                                .collect(Collectors.toList())
-                ).build();
+                           .username(username)
+                           .roles(
+                                   roles.stream()
+                                        .map(Enum::name)
+                                        .collect(Collectors.toList())
+                           )
+                           .build();
     }
 }

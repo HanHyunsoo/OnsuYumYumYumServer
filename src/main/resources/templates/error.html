@@ -1,24 +1,24 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Onsuyum Api Server</title>
-    <link th:href="@{/static/css/style.css}" rel="stylesheet" />
-    <link rel="icon" type="image/x-icon" th:href="@{/static/images/logo.png}">
+  <title>Onsuyum Api Server</title>
+  <link rel="stylesheet" th:href="@{/static/css/style.css}"/>
+  <link rel="icon" th:href="@{/static/images/logo.png}" type="image/x-icon">
 </head>
 
 <body>
-    <div id="tsparticles"></div>
-    <div id="backdrop">
-        <div id="text">
-            <h1 th:text="${ status }"></h1>
-            <p th:if="${ status } == '404'" th:text="${ 'Page ' + error }"></p>
-            <p th:unless="${ status } == '404'" th:text="${ error }"></p>
-            <a href="/swagger-ui/index.html">Redirect to Swagger</a>
-        </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.3.4/tsparticles.bundle.min.js"></script>
-    <script th:src="@{/static/js/script.js}"></script>
+<div id="tsparticles"></div>
+<div id="backdrop">
+  <div id="text">
+    <h1 th:text="${ status }"></h1>
+    <p th:if="${ status } == '404'" th:text="${ 'Page ' + error }"></p>
+    <p th:text="${ error }" th:unless="${ status } == '404'"></p>
+    <a href="/swagger-ui/index.html">Redirect to Swagger</a>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2.3.4/tsparticles.bundle.min.js"></script>
+<script th:src="@{/static/js/script.js}"></script>
 </body>
 
 </html>

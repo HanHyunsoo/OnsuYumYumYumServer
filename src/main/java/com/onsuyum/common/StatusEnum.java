@@ -1,9 +1,16 @@
 package com.onsuyum.common;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-
-import static org.springframework.http.HttpStatus.*;
 
 @Getter
 public enum StatusEnum {
@@ -22,6 +29,12 @@ public enum StatusEnum {
     SUCCESS_DELETE_MENU(OK, "메뉴 삭제 성공"),
     SUCCESS_UPDATE_MENU_IMAGE(OK, "메뉴 이미지 업데이트 성공"),
     SUCCESS_DELETE_MENU_IMAGE(OK, "메뉴 이미지 삭제 성공"),
+    SUCCESS_UPDATE_RESTAURANT(OK, "메뉴 업데이트 성공"),
+    SUCCESS_DELETE_RESTAURANT(OK, "메뉴 삭제 성공"),
+    SUCCESS_UPDATE_RESTAURANT_OUTSIDE_IMAGE(OK, "메뉴 이미지 업데이트 성공"),
+    SUCCESS_DELETE_RESTAURANT_OUTSIDE_IMAGE(OK, "메뉴 이미지 삭제 성공"),
+    SUCCESS_UPDATE_RESTAURANT_INSIDE_IMAGE(OK, "메뉴 이미지 업데이트 성공"),
+    SUCCESS_DELETE_RESTAURANT_INSIDE_IMAGE(OK, "메뉴 이미지 삭제 성공"),
 
     // 201
     SUCCESS_CREATE_MENUS(CREATED, "메뉴들 정보 저장 성공"),
@@ -38,6 +51,8 @@ public enum StatusEnum {
     NEED_CATEGORY_VALUE(BAD_REQUEST, "카테고리를 한개 이상 요청 보내야 합니다."),
     BABFUL_MENU_DATE_ALREADY_EXISTS(BAD_REQUEST, "이미 해당 날짜에 밥풀 식단 데이터가 존재합니다."),
     MENU_IMAGE_ALREADY_EXISTS(BAD_REQUEST, "해당 메뉴에 이미지가 존재합니다."),
+    RESTAURANT_OUTSIDE_IMAGE_ALREADY_EXISTS(BAD_REQUEST, "해당 음식점에 외부 이미지가 존재합니다."),
+    RESTAURANT_INSIDE_IMAGE_ALREADY_EXISTS(BAD_REQUEST, "해당 음식점에 내부 이미지가 존재합니다."),
 
     // 401
     LOGIN_FAIL(UNAUTHORIZED, "아이디 또는 비밀번호가 잘못되어 로그인을 할 수 없습니다."),
@@ -57,7 +72,9 @@ public enum StatusEnum {
     BABFUL_MENU_NOT_FOUND(NOT_FOUND, "해당 ID를 가진 밥풀 식단 없음"),
     LOCAL_FILE_NOT_FOUND(NOT_FOUND, "로컬 저장소에 파일이 존재하지 않음"),
     USER_NOT_FOUND(NOT_FOUND, "유저를 찾을 수 없음"),
-    MENU_IMAGE_NOT_FOUND(BAD_REQUEST, "해당 메뉴에 이미지가 존재하지 않습니다."),
+    MENU_IMAGE_NOT_FOUND(NOT_FOUND, "해당 메뉴에 이미지가 존재하지 않습니다."),
+    RESTAURANT_OUTSIDE_IMAGE_NOT_FOUND(NOT_FOUND, "해당 음식점에 외부 사진이 존재하지 않습니다."),
+    RESTAURANT_INSIDE_IMAGE_NOT_FOUND(NOT_FOUND, "해당 음식점에 내부 사진이 존재하지 않습니다."),
 
     // 500
     COULD_NOT_SAVE_FILE_IN_LOCAL(INTERNAL_SERVER_ERROR, "로컬 저장소에 파일을 저장 할 수 없습니다"),
@@ -65,10 +82,15 @@ public enum StatusEnum {
     COULD_NOT_LOAD_IMAGE_FILE(INTERNAL_SERVER_ERROR, "이미지 파일을 읽어오는 중에 오류가 발생했습니다.");
 
     private final HttpStatus httpStatus;
-    private final String detail;
+    private String detail;
 
     StatusEnum(HttpStatus httpStatus, String detail) {
         this.httpStatus = httpStatus;
         this.detail = detail;
+    }
+
+    public StatusEnum setDetailAndReturn(String detail) {
+        this.detail = detail;
+        return this;
     }
 }

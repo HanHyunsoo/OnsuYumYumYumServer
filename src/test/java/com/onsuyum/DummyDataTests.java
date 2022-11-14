@@ -11,6 +11,21 @@ import com.onsuyum.security.domain.model.Role;
 import com.onsuyum.security.domain.model.User;
 import com.onsuyum.security.domain.repository.UserRepository;
 import com.onsuyum.storage.domain.repository.ImageFileRepository;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.apache.tomcat.util.json.JSONParser;
 import org.apache.tomcat.util.json.ParseException;
@@ -24,17 +39,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.*;
-import java.util.stream.Collectors;
-
 @SpringBootTest
 @ActiveProfiles("development")
 public class DummyDataTests {
+
     @Autowired
     private MenuService menuService;
 
@@ -77,11 +85,15 @@ public class DummyDataTests {
 
             MultipartRestaurantRequest multipartRestaurantRequest = toRestaurantRequest(map);
             Set<String> categoryNames = new HashSet<>((List<String>) map.get("category"));
-            List<MultipartMenuRequest> multipartMenuRequestList = toMenuRequestList((List<Map<String, Object>>) map.get("menu"));
+            List<MultipartMenuRequest> multipartMenuRequestList = toMenuRequestList(
+                    (List<Map<String, Object>>) map.get("menu"));
 
-            RestaurantResponse restaurantResponse = restaurantService.save(multipartRestaurantRequest, false);
-            Map<String, Object> responseMap = restaurantCategoryService.saveAllRestaurantCategory(restaurantResponse.getId(), categoryNames);
-            List<MenuResponse> menuResponses = menuService.saveAll(restaurantResponse.getId(), multipartMenuRequestList);
+            RestaurantResponse restaurantResponse = restaurantService.save(
+                    multipartRestaurantRequest, false);
+            Map<String, Object> responseMap = restaurantCategoryService.saveAllRestaurantCategory(
+                    restaurantResponse.getId(), categoryNames);
+            List<MenuResponse> menuResponses = menuService.saveAll(restaurantResponse.getId(),
+                    multipartMenuRequestList);
         }
 
         clearDummyDataImageFiles();
@@ -108,11 +120,14 @@ public class DummyDataTests {
 
             if (extension.contains("?type=")) {
                 extension = "jpeg";
-                fileName = UUID.randomUUID().toString();
+                fileName = UUID.randomUUID()
+                               .toString();
             }
 
             BufferedImage bufferedImage = ImageIO.read(url);
-            if (isAltImage(bufferedImage, extension)) return null;
+            if (isAltImage(bufferedImage, extension)) {
+                return null;
+            }
             file = new File(dummyDataImagesPath + fileName + "." + extension);
             ImageIO.write(bufferedImage, extension, file);
         } catch (Exception e) {
@@ -123,12 +138,15 @@ public class DummyDataTests {
     }
 
     private MultipartFile toMultipartFileByFile(File file) {
-        if (file == null) return null;
+        if (file == null) {
+            return null;
+        }
 
         MultipartFile multipartFile = null;
 
         try (InputStream inputStream = new FileInputStream(file)) {
-            multipartFile = new MockMultipartFile("file", file.getName(), Files.probeContentType(file.toPath()), inputStream);
+            multipartFile = new MockMultipartFile("file", file.getName(),
+                    Files.probeContentType(file.toPath()), inputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -138,26 +156,29 @@ public class DummyDataTests {
 
     private MultipartRestaurantRequest toRestaurantRequest(Map<String, Object> map) {
         return MultipartRestaurantRequest.builder()
-                .name((String) map.get("name"))
-                .phone((String) map.get("phone"))
-                .time(validTimeList((List<String>) map.get("time")))
-                .summary((String) map.get("summary"))
-                .location((String) map.get("location"))
-                .outsideImage(toMultipartFileByFile(toFileFromUrl((String) map.get("menuImg"))))
-                .insideImage(toMultipartFileByFile(toFileFromUrl((String) map.get("locationImg"))))
-                .build();
+                                         .name((String) map.get("name"))
+                                         .phone((String) map.get("phone"))
+                                         .time(validTimeList((List<String>) map.get("time")))
+                                         .summary((String) map.get("summary"))
+                                         .location((String) map.get("location"))
+                                         .outsideImage(toMultipartFileByFile(
+                                                 toFileFromUrl((String) map.get("menuImg"))))
+                                         .insideImage(toMultipartFileByFile(
+                                                 toFileFromUrl((String) map.get("locationImg"))))
+                                         .build();
 
     }
 
     private List<MultipartMenuRequest> toMenuRequestList(List<Map<String, Object>> maps) {
         return maps.stream()
-                .map(map -> MultipartMenuRequest.builder()
-                        .name((String) map.get("name"))
-                        .price(convertInteger((String) map.get("price")))
-                        .menuImage(toMultipartFileByFile(toFileFromUrl((String) map.get("menuImg"))))
-                        .build()
-                )
-                .collect(Collectors.toList());
+                   .map(map -> MultipartMenuRequest.builder()
+                                                   .name((String) map.get("name"))
+                                                   .price(convertInteger((String) map.get("price")))
+                                                   .menuImage(toMultipartFileByFile(toFileFromUrl(
+                                                           (String) map.get("menuImg"))))
+                                                   .build()
+                   )
+                   .collect(Collectors.toList());
     }
 
     private Integer convertInteger(String priceString) {
@@ -182,8 +203,9 @@ public class DummyDataTests {
         if (img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight()) {
             for (int x = 0; x < img1.getWidth(); x++) {
                 for (int y = 0; y < img1.getHeight(); y++) {
-                    if (img1.getRGB(x, y) != img2.getRGB(x, y))
+                    if (img1.getRGB(x, y) != img2.getRGB(x, y)) {
                         return false;
+                    }
                 }
             }
         } else {
@@ -199,9 +221,9 @@ public class DummyDataTests {
     @Test
     public void addUser() {
         User user = User.builder()
-                .username("admin")
-                .password(new BCryptPasswordEncoder().encode("admin"))
-                .build();
+                        .username("admin")
+                        .password(new BCryptPasswordEncoder().encode("admin"))
+                        .build();
 
         user.addRole(Role.ROLE_USER, Role.ROLE_ADMIN);
 

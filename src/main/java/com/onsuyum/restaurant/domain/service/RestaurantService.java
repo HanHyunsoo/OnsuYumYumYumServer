@@ -1,7 +1,11 @@
 package com.onsuyum.restaurant.domain.service;
 
 import com.onsuyum.common.exception.ForbiddenRestaurantException;
+import com.onsuyum.common.exception.RestaurantInsideImageAlreadyExistsException;
+import com.onsuyum.common.exception.RestaurantInsideImageNotFoundException;
 import com.onsuyum.common.exception.RestaurantNotFoundException;
+import com.onsuyum.common.exception.RestaurantOutsideImageAlreadyExistsException;
+import com.onsuyum.common.exception.RestaurantOutsideImageNotFoundException;
 import com.onsuyum.common.exception.RestaurantTimeNotValidException;
 import com.onsuyum.restaurant.domain.model.Restaurant;
 import com.onsuyum.restaurant.domain.repository.RestaurantRepository;
@@ -10,14 +14,14 @@ import com.onsuyum.restaurant.dto.request.MultipartRestaurantRequest;
 import com.onsuyum.restaurant.dto.response.RestaurantResponse;
 import com.onsuyum.storage.domain.model.ImageFile;
 import com.onsuyum.storage.domain.service.ImageFileService;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -57,6 +61,36 @@ public class RestaurantService {
         return restaurant.toResponseDTO();
     }
 
+    @Transactional
+    public RestaurantResponse saveOutsideImage(Long id, MultipartFile multipartFile) {
+        Restaurant restaurant = findEntityById(id);
+
+        if (restaurant.getOutsideImage() != null) {
+            throw new RestaurantOutsideImageAlreadyExistsException();
+        }
+
+        ImageFile imageFile = imageFileService.save(multipartFile);
+        restaurant.updateOutsideImage(imageFile);
+
+        return restaurantRepository.save(restaurant)
+                                   .toResponseDTO();
+    }
+
+    @Transactional
+    public RestaurantResponse saveInsideImage(Long id, MultipartFile multipartFile) {
+        Restaurant restaurant = findEntityById(id);
+
+        if (restaurant.getInsideImage() != null) {
+            throw new RestaurantInsideImageAlreadyExistsException();
+        }
+
+        ImageFile imageFile = imageFileService.save(multipartFile);
+        restaurant.updateInsideImage(imageFile);
+
+        return restaurantRepository.save(restaurant)
+                                   .toResponseDTO();
+    }
+
     @Transactional(readOnly = true)
     public RestaurantResponse findById(Long id) {
         Restaurant restaurant = findEntityById(id);
@@ -78,30 +112,37 @@ public class RestaurantService {
     @Transactional(readOnly = true)
     public RestaurantResponse findRandomRestaurant() {
         return restaurantRepository.findRandomOne()
-                .orElseThrow(RestaurantNotFoundException::new)
-                .toResponseDTO();
+                                   .orElseThrow(RestaurantNotFoundException::new)
+                                   .toResponseDTO();
     }
 
     @Transactional(readOnly = true)
     public Page<RestaurantResponse> findAllByRequest(Pageable pageable, boolean isRequest) {
-        Page<Restaurant> restaurantPage = restaurantRepository.findAllByRequestWithCategoryCount(pageable, isRequest);
+        Page<Restaurant> restaurantPage = restaurantRepository.findAllByRequestWithCategoryCount(
+                pageable, isRequest);
 
         return restaurantPage.map(Restaurant::toResponseDTO);
     }
 
     @Transactional(readOnly = true)
-    public Page<RestaurantResponse> findAllByNameAndRequest(Pageable pageable, String name, boolean isRequest) {
-        Page<Restaurant> restaurantPage = restaurantRepository.findAllByNameLikeAndRequest(pageable, name, isRequest);
+    public Page<RestaurantResponse> findAllByNameAndRequest(Pageable pageable, String name,
+            boolean isRequest) {
+        Page<Restaurant> restaurantPage = restaurantRepository.findAllByNameLikeAndRequest(pageable,
+                name, isRequest);
 
         return restaurantPage.map(Restaurant::toResponseDTO);
     }
 
     @Transactional
-    public RestaurantResponse update(Long id, JsonRestaurantRequest dto) {
+    public RestaurantResponse update(Long id, JsonRestaurantRequest dto, Boolean isRequest) {
         Restaurant restaurant = findEntityById(id);
 
+        if (isRequest == null) {
+            isRequest = restaurant.isRequest();
+        }
+
         restaurant.update(
-                restaurant.isRequest(),
+                isRequest,
                 dto.getName(),
                 dto.getPhone(),
                 dto.getTime(),
@@ -117,24 +158,41 @@ public class RestaurantService {
     }
 
     @Transactional
-    public RestaurantResponse changeIsRequest(Long id) {
-        Restaurant restaurant = findEntityById(id);
-        restaurant.changeIsRequest();
-
-        restaurant = restaurantRepository.save(restaurant);
-
-        return restaurant.toResponseDTO();
-    }
-
-    @Transactional
     public void deleteById(Long id) {
         Restaurant restaurant = findEntityById(id);
         restaurantRepository.delete(restaurant);
     }
 
+    @Transactional
+    public void deleteOutsideImageById(Long id) {
+        Restaurant restaurant = findEntityById(id);
+        ImageFile outsideImage = restaurant.getOutsideImage();
+
+        if (outsideImage == null) {
+            throw new RestaurantOutsideImageNotFoundException();
+        }
+
+        imageFileService.delete(outsideImage.getId());
+        restaurant.updateOutsideImage(null);
+    }
+
+    @Transactional
+    public void deleteInsideImageById(Long id) {
+        Restaurant restaurant = findEntityById(id);
+        ImageFile insideImage = restaurant.getInsideImage();
+
+        if (insideImage == null) {
+            throw new RestaurantInsideImageNotFoundException();
+        }
+
+        imageFileService.delete(insideImage.getId());
+        restaurant.updateInsideImage(null);
+    }
+
     // Service Layer 내에서 사용 가능한 메서드
     Restaurant findEntityById(Long id) {
-        return restaurantRepository.findById(id).orElseThrow(RestaurantNotFoundException::new);
+        return restaurantRepository.findById(id)
+                                   .orElseThrow(RestaurantNotFoundException::new);
     }
 
     void validTime(Restaurant restaurant) {
