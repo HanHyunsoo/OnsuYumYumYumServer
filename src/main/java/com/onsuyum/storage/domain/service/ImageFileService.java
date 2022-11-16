@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class ImageFileService {
 
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
     private final ImageFileRepository imageFileRepository;
     private final S3StorageService s3StorageService;
     private final LocalStorageService localStorageService;
@@ -26,16 +28,17 @@ public class ImageFileService {
     @Transactional
     public ImageFile save(MultipartFile file) {
         String newFileName = createRandomFileName(file.getOriginalFilename());
-        // TODO S3 용량 때문에 잠깐 막아둠, 실서비스를 사용할 때는 주석 제거하기
-        String s3Url = s3StorageService.upload(file, newFileName);
-//        String s3Url = "";
+        // 개발 환경이면 s3 미사용
+        String s3Url =
+                (activeProfile.equals("production")) ? s3StorageService.upload(file, newFileName)
+                        : "dev";
         localStorageService.upload(file, newFileName);
 
         ImageFile imageFile = ImageFile.builder()
-                                       .originalName(file.getOriginalFilename())
-                                       .convertedName(newFileName)
-                                       .s3Url(s3Url)
-                                       .build();
+                .originalName(file.getOriginalFilename())
+                .convertedName(newFileName)
+                .s3Url(s3Url)
+                .build();
 
         return imageFileRepository.save(imageFile);
     }
