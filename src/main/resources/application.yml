@@ -1,10 +1,10 @@
 cloud:
   aws:
     credentials:
-      accessKey: ${aws_access_key_id}
-      secretKey: ${aws_secret_access_key}
+      accessKey: ${AWS_ACCESS_KEY_ID}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}
     s3:
-      bucket: onsuyum.bucket
+      bucket: hyunsoo-bucket
     region:
       static: ap-northeast-2
     stack:
@@ -17,11 +17,11 @@ cors:
   max-age: 3600
 
 # jwt secret key 설정
-jwt.secret: ${jwt_secret_key}
+jwt.secret: ${JWT_SECRET_KEY}
 
 dummy-data-json-path: "/Users/hanhyunsoo/Desktop/onsuyum_storage/dummy data.json"
 dummy-data-images-path: "/Users/hanhyunsoo/Desktop/onsuyum_storage/download/"
-alt-image-path: "/Users/hanhyunsoo/dev/spring/onsuyum/src/test/java/com/onsuyum/alt.png"
+alt-image-path: "/Users/hanhyunsoo/dev/project/onsuyum/src/test/java/com/onsuyum/alt.png"
 
 spring:
   jpa:
@@ -33,16 +33,16 @@ spring:
 spring:
   # 데이터 소스 설정
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:tcp://localhost:9092/~/Desktop/h2/onsuyum_test;NON_KEYWORDS=USER;MODE=MySQL
-    username: sa
-    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/onsuyum
+    username: user
+    password: user
     hikari:
       pool-name: jpa-hikari-pool
       maximum-pool-size: 5
-      jdbc-url: jdbc:h2:tcp://localhost:9092/~/Desktop/h2/onsuyum_test;NON_KEYWORDS=USER;MODE=MySQL
-      username: sa
-      password:
+      jdbc-url: jdbc:mysql://localhost:3306/onsuyum
+      username: user
+      password: user
       driver-class-name: ${spring.datasource.driver-class-name}
       data-source-properties:
         rewriteBatchedStatements: true
@@ -50,7 +50,7 @@ spring:
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
@@ -94,15 +94,15 @@ spring:
   # 데이터 소스 설정
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://hyunsoo-mysql.cbwgo0eureu4.ap-northeast-2.rds.amazonaws.com:3306/onsuyum
+    url: ${RDS_JDBC_URL}
     username: sa
     password:
     hikari:
       pool-name: jpa-hikari-pool
       maximum-pool-size: 50
-      jdbc-url: jdbc:mysql://hyunsoo-mysql.cbwgo0eureu4.ap-northeast-2.rds.amazonaws.com:3306/onsuyum
-      username: ${rds_username}
-      password: ${rds_password}
+      jdbc-url: ${RDS_JDBC_URL}
+      username: ${RDS_USERNAME}
+      password: ${RDS_PASSWORD}
       driver-class-name: ${spring.datasource.driver-class-name}
       data-source-properties:
         rewriteBatchedStatements: true
@@ -126,7 +126,7 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 50MB
-      location: ${upload_location}
+      location: ${UPLOAD_LOCATION}
   config:
     activate:
       on-profile: production
