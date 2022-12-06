@@ -1,12 +1,15 @@
 package com.onsuyum.restaurant.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Getter
+@Setter // TODO: 2022/12/06 가변 객체 처리하기
 @NoArgsConstructor
 @Schema(description = "음식점 Request(with application/json)")
 @SuperBuilder

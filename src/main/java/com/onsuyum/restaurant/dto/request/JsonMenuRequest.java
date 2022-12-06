@@ -3,9 +3,11 @@ package com.onsuyum.restaurant.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
+@Setter // TODO: 2022/12/06 가변객체 처리하기
 @NoArgsConstructor
 @Schema(description = "메뉴 Request(with application/json)")
 @SuperBuilder
