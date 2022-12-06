@@ -40,3 +40,14 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+bootBuildImage {
+    imageName = System.getenv("DOCKER_ID") + "/${project.name}"
+    publish = true
+    docker {
+        publishRegistry {
+            username = System.getenv("DOCKER_ID")
+            password = System.getenv("DOCKER_PW")
+        }
+    }
+}
