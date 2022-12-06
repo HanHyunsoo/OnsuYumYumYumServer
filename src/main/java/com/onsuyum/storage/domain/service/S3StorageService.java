@@ -6,14 +6,13 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.onsuyum.common.exception.CouldNotSaveFileInS3;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 @Service("s3")
 @RequiredArgsConstructor
@@ -43,7 +42,6 @@ public class S3StorageService implements StorageService {
 
     @Override
     public boolean delete(String fileName) {
-        fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
         return true;
     }

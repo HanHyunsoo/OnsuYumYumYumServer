@@ -142,8 +142,9 @@ public class MenuService {
     @Transactional
     public void deleteById(Long id) {
         Menu menu = findEntityById(id);
-        imageFileService.delete(menu.getMenuImage()
-                                    .getId());
+        if (menu.getMenuImage() != null) {
+            imageFileService.delete(menu.getMenuImage().getId());
+        }
 
         menuRepository.delete(menu);
     }

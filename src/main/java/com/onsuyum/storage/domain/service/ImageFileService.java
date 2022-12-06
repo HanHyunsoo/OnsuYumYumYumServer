@@ -29,9 +29,7 @@ public class ImageFileService {
     public ImageFile save(MultipartFile file) {
         String newFileName = createRandomFileName(file.getOriginalFilename());
         // 개발 환경이면 s3 미사용
-        String s3Url =
-                (activeProfile.equals("production")) ? s3StorageService.upload(file, newFileName)
-                        : "dev";
+        String s3Url = (activeProfile.equals("production")) ? s3StorageService.upload(file, newFileName) : "dev";
         localStorageService.upload(file, newFileName);
 
         ImageFile imageFile = ImageFile.builder()
@@ -62,7 +60,7 @@ public class ImageFileService {
         ImageFile imageFile = imageFileRepository.findById(id)
                                                  .orElseThrow(ImageNotFoundException::new);
 
-        s3StorageService.delete(imageFile.getConvertedName());
+        s3StorageService.delete("onsuyum/" + imageFile.getConvertedName());
         localStorageService.delete(imageFile.getConvertedName());
 
         imageFileRepository.delete(imageFile);
