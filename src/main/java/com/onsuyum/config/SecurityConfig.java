@@ -3,7 +3,6 @@ package com.onsuyum.config;
 import com.onsuyum.security.filter.JwtAuthenticationFilter;
 import com.onsuyum.security.handler.RestAuthenticationEntryPoint;
 import com.onsuyum.security.token.JwtTokenProvider;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +15,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsUtils;
+
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -33,6 +34,8 @@ public class SecurityConfig {
                 cors.setAllowedOrigins(List.of(corsOrigins));
                 cors.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                 cors.setAllowedHeaders(List.of("*"));
+                cors.setAllowCredentials(true);
+                cors.addExposedHeader("Authorization");
                 return cors;
             });
 
