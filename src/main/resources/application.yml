@@ -35,14 +35,14 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/onsuyum
-    username: user
-    password: user
+    username: root
+    password:
     hikari:
       pool-name: jpa-hikari-pool
       maximum-pool-size: 5
       jdbc-url: jdbc:mysql://localhost:3306/onsuyum
-      username: user
-      password: user
+      username: root
+      password:
       driver-class-name: ${spring.datasource.driver-class-name}
       data-source-properties:
         rewriteBatchedStatements: true
@@ -50,7 +50,7 @@ spring:
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     show-sql: true
     properties:
       hibernate:
@@ -87,6 +87,7 @@ logging:
           descriptor:
             sql: trace
 
+
 ---
 # 배포 환경
 # 개발 환경
@@ -110,17 +111,18 @@ spring:
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: off
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-        hbm2ddl.import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
-        current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
         default_batch_fetch_size: ${chunkSize:100}
         jdbc.batch_size: 20
         order_inserts: true
         order_updates: true
+  #        show_sql: true
+  #        format_sql: true
+  #        use_sql_comments: true
   # Request file 설정
   servlet:
     multipart:
@@ -133,6 +135,16 @@ spring:
   devtools:
     livereload:
       enabled: off
+#
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        orm:
+#          jdbc:
+#            bind: trace
+#        type: trace
+#        stat: debug
 
 cors:
   # TODO 실제로 배포할때 localhost 제거해야함
