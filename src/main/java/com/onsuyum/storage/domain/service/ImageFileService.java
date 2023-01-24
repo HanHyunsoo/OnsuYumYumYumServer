@@ -4,7 +4,6 @@ import com.onsuyum.common.exception.ImageNotFoundException;
 import com.onsuyum.common.exception.LocalFileNotFoundException;
 import com.onsuyum.storage.domain.model.ImageFile;
 import com.onsuyum.storage.domain.repository.ImageFileRepository;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -12,6 +11,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class ImageFileService {
     public ImageFile save(MultipartFile file) {
         String newFileName = createRandomFileName(file.getOriginalFilename());
         // 개발 환경이면 s3 미사용
-        String s3Url = (activeProfile.equals("production")) ? s3StorageService.upload(file, newFileName) : "dev";
+        String s3Url = (activeProfile.equals("production")) ? s3StorageService.upload(file, "onsuyum/" + newFileName) : "dev";
         localStorageService.upload(file, newFileName);
 
         ImageFile imageFile = ImageFile.builder()
